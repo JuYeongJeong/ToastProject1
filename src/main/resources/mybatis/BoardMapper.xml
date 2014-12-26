@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="BoardMapper">
+	<select id="WRITING_NUM" resultType="int">
+		SELECT MAX(WRITING_NUM)
+		FROM
+		WRITING
+	</select>
+
+	<insert id="insertWriting" parameterType="nhnent.board.vo.Writing">
+		INSERT INTO WRITING(title,
+		email, password, content, file_path)
+		VALUES(#{title}, #{email},
+		#{password},
+		#{content}, #{filePath});
+	</insert>
+	
+	<insert id="insertLog" parameterType="int">
+		INSERT INTO Log(writing_num, change_time)
+		VALUES(#{writingNum}, SYS_DATE);
+	</insert>
+
+</mapper>
