@@ -13,7 +13,6 @@
 	$(document).ready(function() {
 		$("#writingBT").click(function() {
 			location.replace("/board/writingView");
-			;
 		});
 	});
 </script>

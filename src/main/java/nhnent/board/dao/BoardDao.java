@@ -28,14 +28,6 @@ public class BoardDao {
 		sqlSession.insert("BoardMapper.insertLog", writingNum);
 	}
 
-	public void update(Writing writing) {
-
-	}
-
-	public void delete(int writingNum) {
-
-	}
-
 	public ArrayList getWritingList(int pageNum, int limit,
 			SqlSession sqlSession) {
 		int endNum = pageNum * 10;
