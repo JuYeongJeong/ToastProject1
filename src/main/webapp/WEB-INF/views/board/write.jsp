@@ -28,15 +28,15 @@ $(document).ready(function() {
 	<table>
 		<tr>
 			<td>Á¦¸ñ</td>
-			<td><input id="title" name="title" type="text" /></td>
+			<td><input id="title" name="title" type="text" ></td>
 		</tr>
 		<tr>
 			<td>Email</td>
-			<td><input name="email" type="text"/></td>
+			<td><input name="email" type="text"></td>
 		</tr>
 		<tr>
 			<td>Password</td>
-			<td><input name="password" type="password"/></td>
+			<td><input name="password" type="password"></td>
 		</tr>
 		<tr>
 			<td colspan="2">

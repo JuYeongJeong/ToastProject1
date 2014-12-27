@@ -2,6 +2,9 @@ package nhnent.board.dao;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
 
 import nhnent.board.vo.Log;
 import nhnent.board.vo.Writing;
@@ -11,6 +14,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 public class BoardDao {
 
+	public static final int DEFAULT_PAGE_VIEW = 1;
 	public static final int MAX_PAGE_VIEW = 10;
 
 	public BoardDao() {
@@ -85,6 +89,30 @@ public class BoardDao {
 		Writing writing = sqlSession.selectOne("BoardMapper.writingView",writingNum);
 		modelAndView.addObject("writing",writing);
 		
+		Log log = sqlSession.selectOne("BoardMapper.curLog", writingNum);
+		modelAndView.addObject("log",log);
+	}
+
+	public void modifyWriting(ModelAndView modelAndView, int writingNum,
+			SqlSession sqlSession) {
+		Writing writing = sqlSession.selectOne("BoardMapper.writingView",writingNum);
+		modelAndView.addObject("writing",writing);
+	}
+
+	public void updateWriting(ModelAndView modelAndView, HttpServletRequest request,
+			SqlSession sqlSession) {
+		
+		int writingNum = Integer.parseInt(request.getParameter("writingNum"));
+		Writing writing = sqlSession.selectOne("BoardMapper.writingView", writingNum);
+		
+		writing.setTitle((String)request.getParameter("title"));
+		writing.setContent((String)request.getParameter("content"));
+		writing.setFilePath((String) request.getParameter("filePath"));
+		
+		sqlSession.update("BoardMapper.updateWriting", writing);
+		sqlSession.insert("BoardMapper.insertLog", writingNum);
+		
+		modelAndView.addObject("writing",writing);
 		Log log = sqlSession.selectOne("BoardMapper.curLog", writingNum);
 		modelAndView.addObject("log",log);
 	}

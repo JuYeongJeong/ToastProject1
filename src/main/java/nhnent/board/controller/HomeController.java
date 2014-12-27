@@ -1,6 +1,6 @@
 package nhnent.board.controller;
 
-import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.Locale;
 
 import javax.servlet.http.HttpServletRequest;
@@ -8,7 +8,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import nhnent.board.dao.BoardDao;
 import nhnent.board.vo.Writing;
-import nhnent.board.vo.Log;
 
 import org.apache.ibatis.session.SqlSession;
 import org.slf4j.Logger;
@@ -28,7 +27,6 @@ import org.springframework.web.servlet.ModelAndView;
  */
 @Controller
 public class HomeController {
-	
 
 	@Autowired
 	private SqlSession sqlSession;
@@ -44,7 +42,7 @@ public class HomeController {
 		ModelAndView mView = new ModelAndView();
 		mView.setViewName("/board/writingList.jsp");
 		
-		boardDao.showList(mView, 1 ,sqlSession);
+		boardDao.showList(mView, BoardDao.DEFAULT_PAGE_VIEW ,sqlSession);
 		
 		return mView;
 	}
@@ -54,13 +52,24 @@ public class HomeController {
 		return "/board/write.jsp";
 	}
 	
+	@RequestMapping(value = "/modifyView", method = RequestMethod.GET)
+	public ModelAndView modifyView(HttpServletRequest request, HttpServletResponse response) {
+		ModelAndView mView = new ModelAndView();
+		mView.setViewName("/board/modify.jsp");
+		
+		int writingNum = Integer.parseInt(request.getParameter("writingNum"));		
+		boardDao.modifyWriting(mView, writingNum, sqlSession);
+		 
+		return mView;
+	}
+	
 	@RequestMapping(value = "/showWriting", method = RequestMethod.GET)
 	public ModelAndView showWriting(HttpServletRequest request, HttpServletResponse response) {
 		ModelAndView mView = new ModelAndView();
 		mView.setViewName("/board/view.jsp");
 		
-		int writeNum = Integer.parseInt(request.getParameter("writingNum"));
-		boardDao.showWriting(mView, writeNum, sqlSession);
+		int writingNum = Integer.parseInt(request.getParameter("writingNum"));
+		boardDao.showWriting(mView, writingNum, sqlSession);
 		
 		return mView;
 	}
@@ -89,6 +98,16 @@ public class HomeController {
 		
 		int listNum = Integer.parseInt(request.getParameter("listNum"));
 		boardDao.showList(mView,listNum,sqlSession);
+		
+		return mView;
+	}
+	
+	@RequestMapping(value = "/updateWriting", method = RequestMethod.POST)
+	public ModelAndView updateWriting(HttpServletRequest request, HttpServletResponse response) {
+		ModelAndView mView = new ModelAndView();
+		mView.setViewName("/board/view.jsp");
+
+		boardDao.updateWriting(mView, request, sqlSession);
 		
 		return mView;
 	}
