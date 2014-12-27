@@ -56,16 +56,16 @@ table, th, td {
 		<form id="writingForm" method="post" action="/board/addWriting"
 			enctype="multipart/form-data">
 			<table width="400px">
-				<tr>
+				<tr height="30px">
 					<td width="25%">제목</td>
-					<td width="75%"><input id="title" name="title" type="text"
+					<td width="75%"><input id="title" name="title" type="text" maxlength="40"
 						size="40"></td>
 				</tr>
-				<tr>
+				<tr height="30px">
 					<td width="25%">Email</td>
 					<td width="75%"><input name="email" type="text" size="40"></td>
 				</tr>
-				<tr>
+				<tr height="30px">
 					<td width="25%">Password</td>
 					<td width="75%"><input name="password" type="password"
 						size="40"></td>
@@ -74,7 +74,7 @@ table, th, td {
 					<td colspan="2"><textarea name="content" cols="54" rows="10">내용을 입력하세요</textarea>
 					</td>
 				</tr>
-				<tr>
+				<tr height="30px">
 					<td width="10%">파일첨부</td>
 					<td width="90%" align="left"><input type="file"></td>
 				</tr>
