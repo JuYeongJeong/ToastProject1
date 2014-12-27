@@ -30,7 +30,7 @@ $(document).ready(function() {
 			<c:forEach items="${writingList}" var="writing" varStatus="status">
 				<tr>
 					<td>${writing.writingNum}</td>
-					<td><a href="/board/viewWriting?writeNum=${writing.writingNum}" >${writing.title}</a></td>
+					<td><a href="/board/showWriting?writingNum=${writing.writingNum}" >${writing.title}</a></td>
 					<td>${logList[status.index].changeTime}</td>
 					<td>${writing.email}</td>
 				</tr>

@@ -23,7 +23,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	</select>
 	
 	<select id="writingView" parameterType="int" resultType="nhnent.board.vo.Writing">
-		SELECT writingnum(writingnum), title, email, password, content, filepath
+		SELECT writingnum, title, email, password, content, filePath
 		FROM writing
 		WHERE writingnum = #{writingnum}
 	</select>

@@ -57,7 +57,10 @@ public class HomeController {
 	@RequestMapping(value = "/showWriting", method = RequestMethod.GET)
 	public ModelAndView showWriting(HttpServletRequest request, HttpServletResponse response) {
 		ModelAndView mView = new ModelAndView();
+		mView.setViewName("/board/view.jsp");
 		
+		int writeNum = Integer.parseInt(request.getParameter("writingNum"));
+		boardDao.showWriting(mView, writeNum, sqlSession);
 		
 		return mView;
 	}

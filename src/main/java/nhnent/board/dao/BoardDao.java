@@ -24,12 +24,6 @@ public class BoardDao {
 		sqlSession.insert("BoardMapper.insertLog", writingNum);
 	}
 
-	public Writing view(int writingNum, SqlSession sqlSession) {
-
-		Writing rWriting = sqlSession.selectOne("BoardMapper.writingView");
-		return rWriting;
-	}
-
 	public void update(Writing writing) {
 		
 	}
@@ -86,4 +80,14 @@ public class BoardDao {
 		
 	}
 
+	public void showWriting(ModelAndView modelAndView, int writingNum,
+			SqlSession sqlSession) {
+		Writing writing = sqlSession.selectOne("BoardMapper.writingView",writingNum);
+		modelAndView.addObject("writing",writing);
+		
+		Log log = sqlSession.selectOne("BoardMapper.curLog", writingNum);
+		modelAndView.addObject("log",log);
+	}
+	
+	
 }
