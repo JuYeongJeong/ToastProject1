@@ -29,14 +29,14 @@ public class BoardDao {
 	}
 
 	public void update(Writing writing) {
-		
+
 	}
 
 	public void delete(int writingNum) {
-		
+
 	}
 
-	public ArrayList viewWritingList(int pageNum, int limit,
+	public ArrayList getWritingList(int pageNum, int limit,
 			SqlSession sqlSession) {
 		int endNum = pageNum * 10;
 		int startNum = endNum - 9;
@@ -49,73 +49,87 @@ public class BoardDao {
 				"BoardMapper.writingList", hashMap);
 		return writingList;
 	}
-	
-	public ArrayList getCurWritingLogList(ArrayList<Writing> writingList, SqlSession sqlSession)
-	{
+
+	public ArrayList getCurWritingLogList(ArrayList<Writing> writingList,
+			SqlSession sqlSession) {
 		ArrayList<Log> logList = new ArrayList();
-		
-		for(Writing write : writingList)
-		{
+
+		for (Writing write : writingList) {
 			int writingNum = write.getWritingNum();
 			Log wLog = sqlSession.selectOne("BoardMapper.curLog", writingNum);
 			logList.add(wLog);
 		}
-		
+
 		return logList;
 	}
-	
 
-	public int getPageCount(SqlSession sqlSession) {
+	public ArrayList<String> getPageStrList(SqlSession sqlSession, int pageNum) {
+		int pageGroup = (int) Math.ceil(pageNum/10.0);
+		int startNum = (pageGroup-1)*10 +1;
 		int writingCount = sqlSession.selectOne("BoardMapper.writingCount");
-		int pageCount = writingCount / MAX_PAGE_VIEW ;
-		pageCount = (writingCount % MAX_PAGE_VIEW)> 0 ? pageCount + 1 : pageCount;
+		int endNum = writingCount < startNum + 9? writingCount: startNum + 9;
 		
-		return pageCount;
+		ArrayList<String> pageList = new ArrayList<String>();
+		if (startNum > 10)
+			pageList.add("prev");
+
+		for (int i = startNum; i <= endNum; i++) {
+			pageList.add(Integer.toString(i));
+		}
+		
+		if (endNum < writingCount)
+			pageList.add("next");
+
+		return pageList;
 	}
 
-	public void showList(ModelAndView modelAndView, int listNum, SqlSession sqlSession) {
-		ArrayList<Writing> writingList = viewWritingList(listNum, BoardDao.MAX_PAGE_VIEW, sqlSession);
-		ArrayList<Log> logList  = getCurWritingLogList(writingList, sqlSession);
-		int pageCount = getPageCount(sqlSession);
-		
-		modelAndView.addObject("writingList",writingList);
+	public void showList(ModelAndView modelAndView, int pageNum,
+			SqlSession sqlSession) {
+		ArrayList<Writing> writingList = getWritingList(pageNum,
+				BoardDao.MAX_PAGE_VIEW, sqlSession);
+		ArrayList<Log> logList = getCurWritingLogList(writingList, sqlSession);
+		ArrayList<String> pageList = getPageStrList(sqlSession, pageNum);
+
+		modelAndView.addObject("writingList", writingList);
 		modelAndView.addObject("logList", logList);
-		modelAndView.addObject("pageCount", pageCount);
-		
+		modelAndView.addObject("pageList", pageList);
+		modelAndView.addObject("curPage",Integer.toString(pageNum));
 	}
 
 	public void showWriting(ModelAndView modelAndView, int writingNum,
 			SqlSession sqlSession) {
-		Writing writing = sqlSession.selectOne("BoardMapper.writingView",writingNum);
-		modelAndView.addObject("writing",writing);
-		
+		Writing writing = sqlSession.selectOne("BoardMapper.writingView",
+				writingNum);
+		modelAndView.addObject("writing", writing);
+
 		Log log = sqlSession.selectOne("BoardMapper.curLog", writingNum);
-		modelAndView.addObject("log",log);
+		modelAndView.addObject("log", log);
 	}
 
 	public void modifyWriting(ModelAndView modelAndView, int writingNum,
 			SqlSession sqlSession) {
-		Writing writing = sqlSession.selectOne("BoardMapper.writingView",writingNum);
-		modelAndView.addObject("writing",writing);
+		Writing writing = sqlSession.selectOne("BoardMapper.writingView",
+				writingNum);
+		modelAndView.addObject("writing", writing);
 	}
 
-	public void updateWriting(ModelAndView modelAndView, HttpServletRequest request,
-			SqlSession sqlSession) {
-		
+	public void updateWriting(ModelAndView modelAndView,
+			HttpServletRequest request, SqlSession sqlSession) {
+
 		int writingNum = Integer.parseInt(request.getParameter("writingNum"));
-		Writing writing = sqlSession.selectOne("BoardMapper.writingView", writingNum);
-		
-		writing.setTitle((String)request.getParameter("title"));
-		writing.setContent((String)request.getParameter("content"));
+		Writing writing = sqlSession.selectOne("BoardMapper.writingView",
+				writingNum);
+
+		writing.setTitle((String) request.getParameter("title"));
+		writing.setContent((String) request.getParameter("content"));
 		writing.setFilePath((String) request.getParameter("filePath"));
-		
+
 		sqlSession.update("BoardMapper.updateWriting", writing);
 		sqlSession.insert("BoardMapper.insertLog", writingNum);
-		
-		modelAndView.addObject("writing",writing);
+
+		modelAndView.addObject("writing", writing);
 		Log log = sqlSession.selectOne("BoardMapper.curLog", writingNum);
-		modelAndView.addObject("log",log);
+		modelAndView.addObject("log", log);
 	}
-	
-	
+
 }

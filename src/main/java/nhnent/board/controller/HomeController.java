@@ -96,8 +96,8 @@ public class HomeController {
 		ModelAndView mView = new ModelAndView();
 		mView.setViewName("/board/writingList.jsp");
 		
-		int listNum = Integer.parseInt(request.getParameter("listNum"));
-		boardDao.showList(mView,listNum,sqlSession);
+		int pageNum = Integer.parseInt(request.getParameter("pageNum"));
+		boardDao.showList(mView,pageNum,sqlSession);
 		
 		return mView;
 	}

@@ -19,7 +19,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		SELECT writingnum, title, email, password, content,
 		filepath
 		FROM writing
-		WHERE ROWNUM BETWEEN #{startNum}-1 and #{endNum}+1
+		WHERE ROWNUM BETWEEN #{startNum} and #{endNum}
 		ORDER BY writingnum DESC
 
 	</select>
