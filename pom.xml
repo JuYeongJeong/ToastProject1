@@ -176,8 +176,13 @@
 			<artifactId>cubrid-jdbc-driver-9.3.0.0206</artifactId>
 			<version>1.0</version>
 		</dependency>
-
-
+	
+		<!-- JSTL 1.2 -->
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>jstl</artifactId>
+			<version>1.2</version>
+		</dependency>
 
 	</dependencies>
 	<build>

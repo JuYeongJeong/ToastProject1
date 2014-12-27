@@ -1,7 +1,6 @@
 package nhnent.board.controller;
 
-import java.text.DateFormat;
-import java.util.Date;
+import java.util.ArrayList;
 import java.util.Locale;
 
 import javax.servlet.http.HttpServletRequest;
@@ -9,6 +8,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import nhnent.board.dao.BoardDao;
 import nhnent.board.vo.Writing;
+import nhnent.board.vo.Log;
 
 import org.apache.ibatis.session.SqlSession;
 import org.slf4j.Logger;
@@ -36,35 +36,34 @@ public class HomeController {
 	
 	private	BoardDao boardDao = new BoardDao();
 	
-	
 	/**
 	 * Simply selects the home view to render by returning its name.
 	 */
 	@RequestMapping(value = "/", method = RequestMethod.GET)
-	public String home(Locale locale, Model model) {
-		logger.info("Welcome home! The client locale is {}.", locale);
+	public ModelAndView home() {
+		ModelAndView mView = new ModelAndView();
+		mView.setViewName("/board/writingList.jsp");
 		
-		Date date = new Date();
-		DateFormat dateFormat = DateFormat.getDateTimeInstance(DateFormat.LONG, DateFormat.LONG, locale);
+		boardDao.showList(mView, 1 ,sqlSession);
 		
-		String formattedDate = dateFormat.format(date);
-		
-		model.addAttribute("serverTime", formattedDate );
-		
-		return "home.jsp";
+		return mView;
 	}
 	
 	@RequestMapping(value = "/writingView", method = RequestMethod.GET)
-	public String boardWrite(Locale locale, Model model) {
-		logger.info("writeView", locale);
+	public String writingView(Locale locale, Model model) {
 		return "/board/write.jsp";
 	}
 	
-	@RequestMapping(value = "/addWriting", method = RequestMethod.POST)
-	public ModelAndView addWriting(HttpServletRequest request, HttpServletResponse response ,MultipartFile file) {
-		ModelAndView nextPage = new ModelAndView();
-		nextPage.setViewName("/board/writingList.jsp");
+	@RequestMapping(value = "/showWriting", method = RequestMethod.GET)
+	public ModelAndView showWriting(HttpServletRequest request, HttpServletResponse response) {
+		ModelAndView mView = new ModelAndView();
 		
+		
+		return mView;
+	}
+	
+	@RequestMapping(value = "/addWriting", method = RequestMethod.POST)
+	public ModelAndView addWriting(HttpServletRequest request, HttpServletResponse response ,MultipartFile file) {	
 		MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;
 		
 		Writing r_writing = new Writing();
@@ -76,10 +75,20 @@ public class HomeController {
 		r_writing.setContent(multipartRequest.getParameter("content"));
 		
 		boardDao.insert(r_writing, sqlSession);
-
-		return nextPage;
+		
+		return new ModelAndView("redirect:/");
 	}
 	
+	@RequestMapping(value = "/showList", method = RequestMethod.GET)
+	public ModelAndView showList(HttpServletRequest request, HttpServletResponse response) {
+		ModelAndView mView = new ModelAndView();
+		mView.setViewName("/board/writingList.jsp");
+		
+		int listNum = Integer.parseInt(request.getParameter("listNum"));
+		boardDao.showList(mView,listNum,sqlSession);
+		
+		return mView;
+	}
 	
 	
 	
