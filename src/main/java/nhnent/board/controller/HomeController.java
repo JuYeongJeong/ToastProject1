@@ -52,7 +52,7 @@ public class HomeController {
 		return "/board/write.jsp";
 	}
 
-	@RequestMapping(value = "/modifyView", method = RequestMethod.GET)
+	@RequestMapping(value = "/modifyView", method = RequestMethod.POST)
 	public ModelAndView modifyView(HttpServletRequest request,
 			HttpServletResponse response) {
 		ModelAndView mView = new ModelAndView();
@@ -63,7 +63,6 @@ public class HomeController {
 
 		return mView;
 	}
-
 	@RequestMapping(value = "/showWriting", method = RequestMethod.GET)
 	public ModelAndView showWriting(HttpServletRequest request,
 			HttpServletResponse response) {

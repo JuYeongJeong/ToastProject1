@@ -68,7 +68,7 @@ a{
 					<c:forEach	items="${pageList}" varStatus="status">
 						<c:choose>
 							 <c:when test="${pageList[status.index] == 'next'}">
-							 	<a href="/board/showList?pageNum=${pageList[9]+1}">next</a>
+							 	<a href="/board/showList?pageNum=${pageList[status.index-1]+1}">next</a>
 							 </c:when>
 							 <c:when test="${pageList[status.index] == 'prev'}">
 							 	<a href="/board/showList?pageNum=${pageList[1]-1}">prev</a>
@@ -86,7 +86,7 @@ a{
 			</tr>
 			<tr>
 				<td colspan="2" align="right" style="border: none">
-					<button id="writingBT">글쓰기</button>
+					<input type="Button" id="writingBT" value="글쓰기"/>
 				</td>
 			</tr>
 		</table>

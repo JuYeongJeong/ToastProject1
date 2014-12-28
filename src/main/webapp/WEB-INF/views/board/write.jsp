@@ -58,7 +58,7 @@ table, th, td {
 			<table width="400px">
 				<tr height="30px">
 					<td width="25%">제목</td>
-					<td width="75%"><input id="title" name="title" type="text" maxlength="40"
+					<td width="75%"><input id="title" name="title" type="text" maxlength="50"
 						size="40"></td>
 				</tr>
 				<tr height="30px">
@@ -81,8 +81,8 @@ table, th, td {
 			</table>
 			<br>
 			<table style="border: none;">
-				<tr>
-					<td style="border: none;"><input type="button" id="cancelBt" onclick="cancelClick('${curPage}');"
+				<tr >
+					<td  colspan="2" style="border: none;"><input type="button" id="cancelBt" onclick="cancelClick('${curPage}');"
 						value="취소">&nbsp;&nbsp;<input type="button"
 						id="addWritingBt" value="확인">
 				</tr>

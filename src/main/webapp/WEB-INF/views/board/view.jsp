@@ -17,8 +17,11 @@
 </script>
 <script type="text/javascript">
 	function modifyBtClick(writingNum) {
-		var url = "/board/modifyView?writingNum=" + writingNum;
-		$(location).attr('href',url);
+		//var url = "/board/modifyView?writingNum=" + writingNum;
+		//$(location).attr('href',url);
+		
+		var modifyForm = $("#modifyForm");
+		modifyForm.submit();
 	}
 </script>
 
@@ -28,19 +31,21 @@ table, th, td {
 	border-bottom: 1px solid #D5D5D5;
 	border-collapse: collapse;
 }
+
 </style>
 </head>
 <body>
 <div align="center">
 	<h2>글 보기</h2>
-	<table width="400px">
+<form method="post" action="/board/modifyView" id="modifyForm">
+	<table width="400px" style="table-layout: fixed">
 		<tr height="30px">
 			<td width="25%">글 번호</td>
-			<td id="writingNumCol" width="75%">${writing.writingNum}</td>
+			<td width="75%" ><input type="text" name="writingNum" style="border: none;" readonly="readonly" value="${writing.writingNum}"></td>
 		</tr>
 		<tr height="30px">
 			<td>제목</td>
-			<td>${writing.title}</td>
+			<td style="overflow:hidden;white-space:nowrap;text-overflow:ellipsis">${writing.title}</td>
 		</tr>
 		<tr height="30px">
 			<td>Email</td>
@@ -58,12 +63,13 @@ table, th, td {
 		</tr>
 	</table>
 	<br>
-	<table>
+	<table style="border: none;" >
 		<tr>
-			<td><button id="backBT">뒤로</button>&nbsp;&nbsp;
-				<button id="modifyBT" onclick="modifyBtClick(${writing.writingNum})">수정</button></td>
+			<td colspan="2"  style="border: none;"><input type="button" id="backBT" value="뒤로"/>&nbsp;&nbsp;
+				<input type="button" id="modifyBT" onclick="modifyBtClick()" value="수정"/></td>
 		</tr>
 	</table>
+</form>	
 </div>
 </body>
 </html>
