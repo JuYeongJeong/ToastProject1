@@ -23,6 +23,7 @@ import org.springframework.web.servlet.ModelAndView;
 /**
  * Handles requests for the application home page.
  */
+
 @Controller
 public class HomeController {
 
@@ -88,7 +89,6 @@ public class HomeController {
 	public ModelAndView addWriting(HttpServletRequest request,
 			HttpServletResponse response, MultipartFile file) {
 		MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;
-
 		Writing writing = new Writing();
 
 		writing.setTitle(multipartRequest.getParameter("title"));

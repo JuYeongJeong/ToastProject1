@@ -1,5 +1,5 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
-	pageEncoding="EUC-KR"%>
+	pageEncoding="UTF-8"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
@@ -13,22 +13,22 @@
 			var email = $("#emailFirst").val() + '@' + $("#emailSecond").val();
 		
 			if ($("#title").val() == '') {
-				alert("Á¦¸ñÀ» ÀÔ·ÂÇÏ¼¼¿ä");
+				alert("ì œëª©ì„ ì…ë ¥í•˜ì„¸ìš”");
 				return;
 			}
 
 			if (!isCollectEmail(email)) {
-				alert("¿Ã¹Ù¸¥ emailÀ» ÀÔ·ÂÇÏ¼¼¿ä");
+				alert("ì˜¬ë°”ë¥¸ emailì„ ì…ë ¥í•˜ì„¸ìš”");
 				return;
 			}
 
 			if ($("#password").val() == '') {
-				alert("password ÀÔ·ÂÇÏ¼¼¿ä");
+				alert("password ì…ë ¥í•˜ì„¸ìš”");
 				return;
 			}
 
 			if ($("#content").val() == '') {
-				alert("³»¿ëÀ» ÀÔ·ÂÇÏ¼¼¿ä");
+				alert("ë‚´ìš©ì„ ì…ë ¥í•˜ì„¸ìš”");
 				return;
 			}
 
@@ -83,12 +83,12 @@ table, th, td {
 </head>
 <body>
 	<div align="center">
-		<h2>±Û ¾²±â</h2>
+		<h2>ê¸€ ì“°ê¸°</h2>
 		<form id="writingForm" method="post" action="/board/addWriting"
 			enctype="multipart/form-data">
 			<table width="400px">
 				<tr height="30px">
-					<td width="25%">Á¦¸ñ</td>
+					<td width="25%">ì œëª©</td>
 					<td width="75%"><input id="title" name="title" type="text"
 						maxlength="50" size="40"></td>
 				</tr>
@@ -104,11 +104,11 @@ table, th, td {
 						size="40"></td>
 				</tr>
 				<tr>
-					<td colspan="2"><textarea name="content" cols="54" rows="10">³»¿ëÀ» ÀÔ·ÂÇÏ¼¼¿ä</textarea>
+					<td colspan="2"><textarea name="content" cols="54" rows="10">ë‚´ìš©ì„ ì…ë ¥í•˜ì„¸ìš”</textarea>
 					</td>
 				</tr>
 				<tr height="30px">
-					<td width="10%">ÆÄÀÏÃ·ºÎ</td>
+					<td width="10%">íŒŒì¼ì²¨ë¶€</td>
 					<td width="90%" align="left"><input type="file"></td>
 				</tr>
 			</table>
@@ -116,8 +116,8 @@ table, th, td {
 			<table style="border: none;">
 				<tr>
 					<td colspan="2" style="border: none;"><input type="button"
-						id="cancelBt" onclick="cancelClick('${curPage}');" value="Ãë¼Ò">&nbsp;&nbsp;<input
-						type="button" id="addWritingBt" value="È®ÀÎ">
+						id="cancelBt" onclick="cancelClick('${curPage}');" value="ì·¨ì†Œ">&nbsp;&nbsp;<input
+						type="button" id="addWritingBt" value="í™•ì¸">
 				</tr>
 			</table>
 		</form>

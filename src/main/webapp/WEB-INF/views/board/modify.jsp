@@ -1,5 +1,5 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
-	pageEncoding="EUC-KR"%>
+	pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
@@ -32,7 +32,7 @@ table, th, td {
 </head>
 <body>
 	<div align="center">
-		<h2>臂 荐沥</h2>
+		<h2>旮� 靾橃爼</h2>
 		<form id="updateForm" method="post" action="/board/updateWriting"
 			enctype="multipart/form-data">
 			<table width="400px">
@@ -42,7 +42,7 @@ table, th, td {
 						value="${writing.writingNum}" /></td>
 				</tr>
 				<tr height="30px">
-					<td width="25%">力格</td>
+					<td width="25%">鞝滊</td>
 					<td width="75%"><input id="title" name="title" type="text"
 						maxlength="50" size="42" value="${writing.title}" /></td>
 				</tr>
@@ -51,14 +51,14 @@ table, th, td {
 					<td>${writing.email}</td>
 				</tr>
 				<tr height="30px">
-					<td colspan="2">夯巩</td>
+					<td colspan="2">氤鸽</td>
 				</tr>
 				<tr>
 					<td colspan="2"><textarea name="content" cols="56" rows="10"><c:if
 								test="${not empty writing.content}">${writing.content}</c:if></textarea></td>
 				</tr>
 				<tr height="30px">
-					<td width="10%">颇老梅何</td>
+					<td width="10%">韺岇澕觳秬</td>
 					<td width="90%"><input type="file"
 						<c:if test="${not empty writing.filePath}">value="${writing.filePath}"</c:if>></td>
 				</tr>
@@ -67,8 +67,8 @@ table, th, td {
 			<table style="border: none;">
 				<tr>
 					<td colspan="2" style="border: none;"><input type="button"
-						id="cancelBT" value="秒家">&nbsp;&nbsp;<input type="button"
-						id="modifyBT" value="荐沥"></td>
+						id="cancelBT" value="旆唽">&nbsp;&nbsp;<input type="button"
+						id="modifyBT" value="靾橃爼"></td>
 				</tr>
 			</table>
 		</form>
