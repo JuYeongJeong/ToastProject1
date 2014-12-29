@@ -25,7 +25,7 @@ public class BoardDao {
 
 	public static final int DEFAULT_PAGE_VIEW = 1;
 	public static final int MAX_PAGE_VIEW = 10;
-	public final int FILE_BUFFER_SIZE = 4084;
+	public final int FILE_BUFFER_SIZE = 4096;
 	
 	public BoardDao() {
 	}
@@ -47,8 +47,7 @@ public class BoardDao {
 
 	public String uploadFile(String basePath, MultipartFile multipartFile) {
 		// TODO Auto-generated method stub
-		String filePath=basePath+"/upload";
-		multipartFile.getOriginalFilename();
+		String filePath = basePath+"/upload";
 		
 		File file = new File(filePath);
 		if(!file.exists())
@@ -145,6 +144,15 @@ public class BoardDao {
 				writingNum);
 		map.put("writing", writing);
 
+		String filePath = writing.getFilePath();
+		if(filePath.length() !=0)
+		{
+			File file = new File(filePath);
+			map.put("fileName", file.getName());
+		}
+		
+		
+		
 		Log log = sqlSession.selectOne("BoardMapper.curLog", writingNum);
 		map.put("log", log);
 

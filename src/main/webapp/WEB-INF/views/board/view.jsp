@@ -82,7 +82,7 @@ table, th, td {
 				</tr>
 				<tr height="30px">
 					<td>파일첨부</td>
-					<td><c:if test="${not empty writing.filePath}">${writing.filePath}</c:if></td>
+					<td><c:if test="${not empty requestScope.fileName}"><a href="/board/downloadFile?filePath=${writing.filePath}">${requestScope.fileName}</a></c:if></td>
 				</tr>
 			</table>
 			<br>

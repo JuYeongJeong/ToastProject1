@@ -1,5 +1,10 @@
 package nhnent.board.controller;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -32,11 +37,10 @@ public class HomeController {
 			.getLogger(HomeController.class);
 
 	private final int TEN_MB = 10485760;
-	
+
 	@Autowired
 	private SqlSession sqlSession;
 	private BoardDao boardDao = new BoardDao();
-
 
 	/**
 	 * Simply selects the home view to render by returning its name.
@@ -44,19 +48,20 @@ public class HomeController {
 	@RequestMapping(value = "/", method = RequestMethod.GET)
 	public ModelAndView home(HttpServletRequest request,
 			HttpServletResponse response) {
-	
+
 		ModelAndView mView = new ModelAndView("/board/writingList.jsp");
 
-		Map map = boardDao.showList(mView, BoardDao.DEFAULT_PAGE_VIEW, sqlSession);
-		
+		Map map = boardDao.showList(mView, BoardDao.DEFAULT_PAGE_VIEW,
+				sqlSession);
+
 		mView.addObject("writingList", map.get("writingList"));
 		mView.addObject("logList", map.get("logList"));
 		mView.addObject("pageList", map.get("pageList"));
 		mView.addObject("curPage", Integer.toString(BoardDao.DEFAULT_PAGE_VIEW));
-		
+
 		HttpSession session = request.getSession();
 		session.setAttribute("curPage", BoardDao.DEFAULT_PAGE_VIEW);
-		
+
 		return mView;
 	}
 
@@ -82,27 +87,33 @@ public class HomeController {
 		ModelAndView mView = new ModelAndView("/board/view.jsp");
 
 		int writingNum = Integer.parseInt(request.getParameter("writingNum"));
-		
+
 		Map map = boardDao.showWriting(mView, writingNum, sqlSession);
 		mView.addObject("writing", map.get("writing"));
 		mView.addObject("log", map.get("log"));
-	
+
+		String fileName = (String) map.get("fileName");
+		if (fileName != null)
+			mView.addObject("fileName", fileName);
+
 		return mView;
 	}
 
 	@RequestMapping(value = "/addWriting", method = RequestMethod.POST)
 	public ModelAndView addWriting(HttpServletRequest request,
 			HttpServletResponse response, MultipartFile file) {
-	
+
 		Map map = new HashMap();
 		map.put("title", request.getParameter("title"));
-		map.put("email", request.getParameter("emailFirst")+'@'+request.getParameter("emailSecond"));
-		map.put("password",request.getParameter("password"));
+		map.put("email",
+				request.getParameter("emailFirst") + '@'
+						+ request.getParameter("emailSecond"));
+		map.put("password", request.getParameter("password"));
 		map.put("content", request.getParameter("content"));
 		map.put("filePath", request.getParameter("filePath"));
-		
+
 		boardDao.addWriting(map, sqlSession);
-		
+
 		return new ModelAndView("redirect:/");
 	}
 
@@ -118,12 +129,12 @@ public class HomeController {
 			pageNum = 1;
 		}
 		Map map = boardDao.showList(mView, pageNum, sqlSession);
-		
+
 		mView.addObject("writingList", map.get("writingList"));
 		mView.addObject("logList", map.get("logList"));
 		mView.addObject("pageList", map.get("pageList"));
 		mView.addObject("curPage", Integer.toString(pageNum));
-		
+
 		HttpSession session = request.getSession();
 		session.setAttribute("curPage", pageNum);
 
@@ -154,12 +165,12 @@ public class HomeController {
 
 		return mView;
 	}
-	
+
 	@RequestMapping(value = "/isCollectEmail", method = RequestMethod.POST)
 	public ModelAndView isCollectEmail(HttpServletRequest request,
 			HttpServletResponse response) {
 		ModelAndView mView = new ModelAndView("/board/ajaxCheckResult.jsp");
-		
+
 		String email = request.getParameter("email");
 
 		Boolean result = boardDao.isCollectEmail(email, sqlSession);
@@ -171,15 +182,53 @@ public class HomeController {
 	@RequestMapping(value = "/fileUpload", method = RequestMethod.POST)
 	public ModelAndView fileUpload(MultipartHttpServletRequest request) {
 		ModelAndView mView = new ModelAndView("/board/ajaxCheckResult.jsp");
-		
+
 		String fileName = request.getFileNames().next();
 		MultipartFile multipartFile = request.getFile(fileName);
-		
-		if( multipartFile.getSize() > TEN_MB)
-			return mView.addObject("result","upload:overSize");
-		
-		String strResult = boardDao.uploadFile(request.getRealPath(""),multipartFile);
-		mView.addObject("result",strResult);
+
+		if (multipartFile.getSize() > TEN_MB)
+			return mView.addObject("result", "upload:overSize");
+
+		String strResult = boardDao.uploadFile(request.getRealPath(""),
+				multipartFile);
+		mView.addObject("result", strResult);
 		return mView;
+	}
+
+	@RequestMapping(value = "/downloadFile", method = RequestMethod.GET)
+	public void fileDown(HttpServletRequest request,
+			HttpServletResponse response) {
+
+		// construct the complete absolute path of the file
+		String filePath = request.getParameter("filePath");
+		File downloadFile = new File(filePath);
+
+		// set content attributes for the response
+		response.setContentType("application/octet-stream");
+		response.setContentLength((int) downloadFile.length());
+
+		// set headers for the response
+		String headerKey = "Content-Disposition";
+		String headerValue = String.format("attachment; filename=\"%s\"",
+				downloadFile.getName());
+		response.setHeader(headerKey, headerValue);
+
+		FileInputStream inputStream = null;
+		OutputStream outStream = null;
+		try {
+			inputStream = new FileInputStream(downloadFile);
+			outStream = response.getOutputStream();
+			byte[] buffer = new byte[4096];
+			int bytesRead = -1;
+			while ((bytesRead = inputStream.read(buffer)) != -1) {
+				outStream.write(buffer, 0, bytesRead);
+			}
+				
+			inputStream.close();
+			outStream.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 }
