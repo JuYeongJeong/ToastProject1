@@ -24,11 +24,11 @@ import org.springframework.web.servlet.ModelAndView;
 @Controller
 public class HomeController {
 
-	@Autowired
-	private SqlSession sqlSession;
-	private static final Logger logger = LoggerFactory
+	private static final Logger LOGGER = LoggerFactory
 			.getLogger(HomeController.class);
 
+	@Autowired
+	private SqlSession sqlSession;
 	private BoardDao boardDao = new BoardDao();
 
 	/**
@@ -81,15 +81,15 @@ public class HomeController {
 			HttpServletResponse response, MultipartFile file) {
 		MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;
 
-		Writing r_writing = new Writing();
+		Writing writing = new Writing();
 
-		r_writing.setTitle(multipartRequest.getParameter("title"));
-		r_writing.setEmail(multipartRequest.getParameter("email"));
-		r_writing.setPassword(multipartRequest.getParameter("password"));
-		r_writing.setFilePath(multipartRequest.getParameter("filePath"));
-		r_writing.setContent(multipartRequest.getParameter("content"));
+		writing.setTitle(multipartRequest.getParameter("title"));
+		writing.setEmail(multipartRequest.getParameter("email"));
+		writing.setPassword(multipartRequest.getParameter("password"));
+		writing.setFilePath(multipartRequest.getParameter("filePath"));
+		writing.setContent(multipartRequest.getParameter("content"));
 
-		boardDao.insert(r_writing, sqlSession);
+		boardDao.insert(writing, sqlSession);
 
 		return new ModelAndView("redirect:/");
 	}
@@ -134,15 +134,10 @@ public class HomeController {
 		int writingNum = Integer.parseInt(request.getParameter("writingNum"));
 		String password = request.getParameter("password");
 
-		Boolean result = boardDao.checkPassword(writingNum, password,
+		Boolean result = boardDao.isCollectPassword(writingNum, password,
 				sqlSession);
-		
-		mView.addObject("result",result.toString());
-//		if(result)
-//			mView.addObject("result",result);
-//		else
-//			mView.addObject("result","false");
-//		
+		mView.addObject("result", result.toString());
+
 		return mView;
 	}
 

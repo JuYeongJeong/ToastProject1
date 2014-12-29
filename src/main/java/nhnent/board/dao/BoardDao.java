@@ -2,7 +2,7 @@ package nhnent.board.dao;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -28,7 +28,7 @@ public class BoardDao {
 		sqlSession.insert("BoardMapper.insertLog", writingNum);
 	}
 
-	public ArrayList getWritingList(int pageNum, int limit,
+	public List getWritingList(int pageNum, int limit,
 			SqlSession sqlSession) {
 		int endNum = pageNum * 10;
 		int startNum = endNum - 9;
@@ -37,14 +37,14 @@ public class BoardDao {
 		hashMap.put("startNum", startNum);
 		hashMap.put("endNum", endNum);
 
-		ArrayList<Writing> writingList = (ArrayList) sqlSession.selectList(
+		List<Writing> writingList = (ArrayList) sqlSession.selectList(
 				"BoardMapper.writingList", hashMap);
 		return writingList;
 	}
 
-	public ArrayList getCurWritingLogList(ArrayList<Writing> writingList,
+	public List getCurWritingLogList(List<Writing> writingList,
 			SqlSession sqlSession) {
-		ArrayList<Log> logList = new ArrayList();
+		List<Log> logList = new ArrayList<Log>();
 
 		for (Writing write : writingList) {
 			int writingNum = write.getWritingNum();
@@ -55,13 +55,13 @@ public class BoardDao {
 		return logList;
 	}
 
-	public ArrayList<String> getPageStrList(SqlSession sqlSession, int pageNum) {
+	public List<String> getPageStrList(SqlSession sqlSession, int pageNum) {
 		int pageGroup = (int) Math.ceil(pageNum / 10.0);
 		int startNum = (pageGroup - 1) * 10 + 1;
 		int writingCount = sqlSession.selectOne("BoardMapper.writingCount");
 		int endNum = writingCount < startNum + 9 ? writingCount : startNum + 9;
 
-		ArrayList<String> pageList = new ArrayList<String>();
+		List<String> pageList = new ArrayList<String>();
 		if (startNum > 10)
 			pageList.add("prev");
 
@@ -77,10 +77,10 @@ public class BoardDao {
 
 	public void showList(ModelAndView modelAndView, int pageNum,
 			SqlSession sqlSession) {
-		ArrayList<Writing> writingList = getWritingList(pageNum,
+		List<Writing> writingList = getWritingList(pageNum,
 				BoardDao.MAX_PAGE_VIEW, sqlSession);
-		ArrayList<Log> logList = getCurWritingLogList(writingList, sqlSession);
-		ArrayList<String> pageList = getPageStrList(sqlSession, pageNum);
+		List<Log> logList = getCurWritingLogList(writingList, sqlSession);
+		List<String> pageList = getPageStrList(sqlSession, pageNum);
 
 		modelAndView.addObject("writingList", writingList);
 		modelAndView.addObject("logList", logList);
@@ -124,7 +124,7 @@ public class BoardDao {
 		modelAndView.addObject("log", log);
 	}
 
-	public boolean checkPassword(int writingNum, String password,
+	public Boolean isCollectPassword(int writingNum, String password,
 			SqlSession sqlSession) {
 		// TODO Auto-generated method stub
 		if (password == null || password.length() == 0)
@@ -134,10 +134,7 @@ public class BoardDao {
 		Writing writing = sqlSession.selectOne("BoardMapper.writingView",
 				writingNum);
 
-		if (password.equals(writing.getPassword()))
-			result = true;
-
-		return result;
+		return password.equals(writing.getPassword());
 	}
 
 }
