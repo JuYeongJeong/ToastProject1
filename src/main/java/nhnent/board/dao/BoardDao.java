@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -29,8 +30,7 @@ public class BoardDao {
 		sqlSession.insert("BoardMapper.insertLog", writingNum);
 	}
 
-	public List getWritingList(int pageNum, int limit,
-			SqlSession sqlSession) {
+	public List getWritingList(int pageNum, int limit, SqlSession sqlSession) {
 		int endNum = pageNum * 10;
 		int startNum = endNum - 9;
 
@@ -79,40 +79,38 @@ public class BoardDao {
 	public Map showList(ModelAndView modelAndView, int pageNum,
 			SqlSession sqlSession) {
 		Map map = new HashMap();
-		
+
 		List<Writing> writingList = getWritingList(pageNum,
 				BoardDao.MAX_PAGE_VIEW, sqlSession);
 		map.put("writingList", writingList);
-		
+
 		List<Log> logList = getCurWritingLogList(writingList, sqlSession);
 		map.put("logList", logList);
-		
+
 		List<String> pageList = getPageStrList(sqlSession, pageNum);
 		map.put("pageList", pageList);
-		
+
 		return map;
 	}
 
 	public Map showWriting(ModelAndView modelAndView, int writingNum,
 			SqlSession sqlSession) {
 		Map map = new HashMap();
-		
+
 		Writing writing = sqlSession.selectOne("BoardMapper.writingView",
 				writingNum);
 		map.put("writing", writing);
-		
+
 		Log log = sqlSession.selectOne("BoardMapper.curLog", writingNum);
 		map.put("log", log);
 
-		
 		return map;
 	}
 
-	public Writing modifyWriting(int writingNum,
-			SqlSession sqlSession) {
+	public Writing modifyWriting(int writingNum, SqlSession sqlSession) {
 		Writing writing = sqlSession.selectOne("BoardMapper.writingView",
 				writingNum);
-		
+
 		return writing;
 	}
 
@@ -141,11 +139,20 @@ public class BoardDao {
 		if (password == null || password.length() == 0)
 			return false;
 
-		boolean result = false;
 		Writing writing = sqlSession.selectOne("BoardMapper.writingView",
 				writingNum);
 
 		return password.equals(writing.getPassword());
+	}
+
+	public Boolean isCollectEmail(String email, SqlSession sqlSession) {
+		// TODO Auto-generated method stub
+		if (email == null)
+			return false;
+		
+		String regex = "^[_a-z0-9-]+(.[_a-z0-9-]+)*@(?:\\w+\\.)+\\w+$";
+		return Pattern.matches(regex, email.trim());
+
 	}
 
 }

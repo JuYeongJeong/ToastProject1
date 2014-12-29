@@ -10,27 +10,24 @@
 	$(document).ready(function() {
 		$("#addWritingBt").click(function() {
 
-			var title = $("#title").val();
-			var email = $("#email").val();
-			var password = $("#password").val();
-			var content = $("#title").val();
-
-			if (title == '') {
+			var email = $("#emailFirst").val() + '@' + $("#emailSecond").val();
+		
+			if ($("#title").val() == '') {
 				alert("제목을 입력하세요");
 				return;
 			}
 
-			if (email == '') {
-				alert("email 입력하세요");
+			if (!isCollectEmail(email)) {
+				alert("올바른 email을 입력하세요");
 				return;
 			}
-		
-			
-			if (password == '') {
+
+			if ($("#password").val() == '') {
 				alert("password 입력하세요");
 				return;
 			}
-			if (content == '') {
+
+			if ($("#content").val() == '') {
 				alert("내용을 입력하세요");
 				return;
 			}
@@ -38,9 +35,41 @@
 			$("#writingForm").submit();
 		});
 	});
+
+	function isCollectEmail(email) {
+		var result = true;
 	
+		//client check
+		var regex =/^([0-9a-zA-Z_\.-]+)@([0-9a-zA-Z_-]+)(\.[0-9a-zA-Z_-]+){1,2}$/;
+		if (regex.test(email))
+			result = true;
+		else
+			return false;
+		
+		//server check
+		$.ajax({
+			type : "POST",
+			url : "/board/isCollectEmail",
+			data : {
+				email : email
+			},
+			success : function(data) {
+				if(data.search("true") != -1)
+					result = true;
+				else
+					result = false;
+			},
+			error : function(data) {
+				alert("error");
+			}
+		});
+		
+		
+		return result;
+	}
+
 	function cancelClick(curPage) {
-		location.replace("/board/showList?pageNum="+curPage);
+		location.replace("/board/showList?pageNum=" + curPage);
 	}
 </script>
 
@@ -60,12 +89,14 @@ table, th, td {
 			<table width="400px">
 				<tr height="30px">
 					<td width="25%">제목</td>
-					<td width="75%"><input id="title" name="title" type="text" maxlength="50"
-						size="40"></td>
+					<td width="75%"><input id="title" name="title" type="text"
+						maxlength="50" size="40"></td>
 				</tr>
 				<tr height="30px">
 					<td width="25%">Email</td>
-					<td width="75%"><input name="email" type="text" size="15">@<input name="emailSecond" type="text" size="15"></td>
+					<td width="75%"><input id="emailFirst" name="emailFirst"
+						type="text" size="15">@<input id="emailSecond"
+						name="emailSecond" type="text" size="15"></td>
 				</tr>
 				<tr height="30px">
 					<td width="25%">Password</td>
@@ -83,10 +114,10 @@ table, th, td {
 			</table>
 			<br>
 			<table style="border: none;">
-				<tr >
-					<td  colspan="2" style="border: none;"><input type="button" id="cancelBt" onclick="cancelClick('${curPage}');"
-						value="취소">&nbsp;&nbsp;<input type="button"
-						id="addWritingBt" value="확인">
+				<tr>
+					<td colspan="2" style="border: none;"><input type="button"
+						id="cancelBt" onclick="cancelClick('${curPage}');" value="취소">&nbsp;&nbsp;<input
+						type="button" id="addWritingBt" value="확인">
 				</tr>
 			</table>
 		</form>

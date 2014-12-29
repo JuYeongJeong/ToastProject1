@@ -43,9 +43,6 @@
 			}
 		});
 	}
-
-	function passwordEventHandler() {
-	}
 </script>
 
 <style type="text/css">

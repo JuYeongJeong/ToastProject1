@@ -39,8 +39,8 @@ public class HomeController {
 	@RequestMapping(value = "/", method = RequestMethod.GET)
 	public ModelAndView home(HttpServletRequest request,
 			HttpServletResponse response) {
-		ModelAndView mView = new ModelAndView();
-		mView.setViewName("/board/writingList.jsp");	
+		ModelAndView mView = new ModelAndView("/board/writingList.jsp");
+
 		Map map = boardDao.showList(mView, BoardDao.DEFAULT_PAGE_VIEW, sqlSession);
 		
 		mView.addObject("writingList", map.get("writingList"));
@@ -62,8 +62,7 @@ public class HomeController {
 	@RequestMapping(value = "/modifyView", method = RequestMethod.POST)
 	public ModelAndView modifyView(HttpServletRequest request,
 			HttpServletResponse response) {
-		ModelAndView mView = new ModelAndView();
-		mView.setViewName("/board/modify.jsp");
+		ModelAndView mView = new ModelAndView("/board/modify.jsp");
 
 		int writingNum = Integer.parseInt(request.getParameter("writingNum"));
 		Writing writing = boardDao.modifyWriting(writingNum, sqlSession);
@@ -74,8 +73,7 @@ public class HomeController {
 	@RequestMapping(value = "/showWriting", method = RequestMethod.GET)
 	public ModelAndView showWriting(HttpServletRequest request,
 			HttpServletResponse response) {
-		ModelAndView mView = new ModelAndView();
-		mView.setViewName("/board/view.jsp");
+		ModelAndView mView = new ModelAndView("/board/view.jsp");
 
 		int writingNum = Integer.parseInt(request.getParameter("writingNum"));
 		
@@ -94,7 +92,7 @@ public class HomeController {
 		Writing writing = new Writing();
 
 		writing.setTitle(multipartRequest.getParameter("title"));
-		writing.setEmail(multipartRequest.getParameter("email"));
+		writing.setEmail(multipartRequest.getParameter("emailFirst")+'@'+multipartRequest.getParameter("emailSecond"));
 		writing.setPassword(multipartRequest.getParameter("password"));
 		writing.setFilePath(multipartRequest.getParameter("filePath"));
 		writing.setContent(multipartRequest.getParameter("content"));
@@ -107,8 +105,7 @@ public class HomeController {
 	@RequestMapping(value = "/showList", method = RequestMethod.GET)
 	public ModelAndView showList(HttpServletRequest request,
 			HttpServletResponse response) {
-		ModelAndView mView = new ModelAndView();
-		mView.setViewName("/board/writingList.jsp");
+		ModelAndView mView = new ModelAndView("/board/writingList.jsp");
 
 		int pageNum = 1;
 		try {
@@ -132,8 +129,7 @@ public class HomeController {
 	@RequestMapping(value = "/updateWriting", method = RequestMethod.POST)
 	public ModelAndView updateWriting(HttpServletRequest request,
 			HttpServletResponse response) {
-		ModelAndView mView = new ModelAndView();
-		mView.setViewName("/board/view.jsp");
+		ModelAndView mView = new ModelAndView("/board/view.jsp");
 
 		boardDao.updateWriting(mView, request, sqlSession);
 
@@ -143,14 +139,26 @@ public class HomeController {
 	@RequestMapping(value = "/isCollectPassword", method = RequestMethod.POST)
 	public ModelAndView isCollectPassword(HttpServletRequest request,
 			HttpServletResponse response) {
-		ModelAndView mView = new ModelAndView();
-		mView.setViewName("/board/emailCheckResult.jsp");
+		ModelAndView mView = new ModelAndView("/board/emailCheckResult.jsp");
 
 		int writingNum = Integer.parseInt(request.getParameter("writingNum"));
 		String password = request.getParameter("password");
 
 		Boolean result = boardDao.isCollectPassword(writingNum, password,
 				sqlSession);
+		mView.addObject("result", result.toString());
+
+		return mView;
+	}
+	
+	@RequestMapping(value = "/isCollectEmail", method = RequestMethod.POST)
+	public ModelAndView isCollectEmail(HttpServletRequest request,
+			HttpServletResponse response) {
+		ModelAndView mView = new ModelAndView("/board/emailCheckResult.jsp");
+		
+		String email = request.getParameter("email");
+
+		Boolean result = boardDao.isCollectEmail(email, sqlSession);
 		mView.addObject("result", result.toString());
 
 		return mView;
