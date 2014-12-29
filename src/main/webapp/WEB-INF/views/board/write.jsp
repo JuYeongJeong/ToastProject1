@@ -24,6 +24,8 @@
 				alert("email 입력하세요");
 				return;
 			}
+		
+			
 			if (password == '') {
 				alert("password 입력하세요");
 				return;
@@ -63,7 +65,7 @@ table, th, td {
 				</tr>
 				<tr height="30px">
 					<td width="25%">Email</td>
-					<td width="75%"><input name="email" type="text" size="40"></td>
+					<td width="75%"><input name="email" type="text" size="15">@<input name="emailSecond" type="text" size="15"></td>
 				</tr>
 				<tr height="30px">
 					<td width="25%">Password</td>

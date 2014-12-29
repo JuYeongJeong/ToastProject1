@@ -27,7 +27,7 @@
 
 		$.ajax({
 			type : "POST",
-			url : "/board/checkPassword",
+			url : "/board/isCollectPassword",
 			data : {
 				writingNum : $("#writingNum").val(),
 				password : inputPass

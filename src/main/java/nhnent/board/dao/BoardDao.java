@@ -3,6 +3,7 @@ package nhnent.board.dao;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -33,7 +34,7 @@ public class BoardDao {
 		int endNum = pageNum * 10;
 		int startNum = endNum - 9;
 
-		HashMap<String, Integer> hashMap = new HashMap();
+		HashMap<String, Integer> hashMap = new HashMap<String, Integer>();
 		hashMap.put("startNum", startNum);
 		hashMap.put("endNum", endNum);
 
@@ -75,34 +76,44 @@ public class BoardDao {
 		return pageList;
 	}
 
-	public void showList(ModelAndView modelAndView, int pageNum,
+	public Map showList(ModelAndView modelAndView, int pageNum,
 			SqlSession sqlSession) {
+		Map map = new HashMap();
+		
 		List<Writing> writingList = getWritingList(pageNum,
 				BoardDao.MAX_PAGE_VIEW, sqlSession);
+		map.put("writingList", writingList);
+		
 		List<Log> logList = getCurWritingLogList(writingList, sqlSession);
+		map.put("logList", logList);
+		
 		List<String> pageList = getPageStrList(sqlSession, pageNum);
-
-		modelAndView.addObject("writingList", writingList);
-		modelAndView.addObject("logList", logList);
-		modelAndView.addObject("pageList", pageList);
-		modelAndView.addObject("curPage", Integer.toString(pageNum));
+		map.put("pageList", pageList);
+		
+		return map;
 	}
 
-	public void showWriting(ModelAndView modelAndView, int writingNum,
+	public Map showWriting(ModelAndView modelAndView, int writingNum,
 			SqlSession sqlSession) {
+		Map map = new HashMap();
+		
 		Writing writing = sqlSession.selectOne("BoardMapper.writingView",
 				writingNum);
-		modelAndView.addObject("writing", writing);
-
+		map.put("writing", writing);
+		
 		Log log = sqlSession.selectOne("BoardMapper.curLog", writingNum);
-		modelAndView.addObject("log", log);
+		map.put("log", log);
+
+		
+		return map;
 	}
 
-	public void modifyWriting(ModelAndView modelAndView, int writingNum,
+	public Writing modifyWriting(int writingNum,
 			SqlSession sqlSession) {
 		Writing writing = sqlSession.selectOne("BoardMapper.writingView",
 				writingNum);
-		modelAndView.addObject("writing", writing);
+		
+		return writing;
 	}
 
 	public void updateWriting(ModelAndView modelAndView,

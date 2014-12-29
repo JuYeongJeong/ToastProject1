@@ -1,5 +1,7 @@
 package nhnent.board.controller;
 
+import java.util.Map;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -38,12 +40,17 @@ public class HomeController {
 	public ModelAndView home(HttpServletRequest request,
 			HttpServletResponse response) {
 		ModelAndView mView = new ModelAndView();
-		mView.setViewName("/board/writingList.jsp");
-
-		boardDao.showList(mView, BoardDao.DEFAULT_PAGE_VIEW, sqlSession);
+		mView.setViewName("/board/writingList.jsp");	
+		Map map = boardDao.showList(mView, BoardDao.DEFAULT_PAGE_VIEW, sqlSession);
+		
+		mView.addObject("writingList", map.get("writingList"));
+		mView.addObject("logList", map.get("logList"));
+		mView.addObject("pageList", map.get("pageList"));
+		mView.addObject("curPage", Integer.toString(BoardDao.DEFAULT_PAGE_VIEW));
+		
 		HttpSession session = request.getSession();
 		session.setAttribute("curPage", BoardDao.DEFAULT_PAGE_VIEW);
-
+		
 		return mView;
 	}
 
@@ -59,8 +66,8 @@ public class HomeController {
 		mView.setViewName("/board/modify.jsp");
 
 		int writingNum = Integer.parseInt(request.getParameter("writingNum"));
-		boardDao.modifyWriting(mView, writingNum, sqlSession);
-
+		Writing writing = boardDao.modifyWriting(writingNum, sqlSession);
+		mView.addObject("writing", writing);
 		return mView;
 	}
 
@@ -71,8 +78,11 @@ public class HomeController {
 		mView.setViewName("/board/view.jsp");
 
 		int writingNum = Integer.parseInt(request.getParameter("writingNum"));
-		boardDao.showWriting(mView, writingNum, sqlSession);
-
+		
+		Map map = boardDao.showWriting(mView, writingNum, sqlSession);
+		mView.addObject("writing", map.get("writing"));
+		mView.addObject("log", map.get("log"));
+	
 		return mView;
 	}
 
@@ -106,8 +116,13 @@ public class HomeController {
 		} catch (Exception e) {
 			pageNum = 1;
 		}
-		boardDao.showList(mView, pageNum, sqlSession);
-
+		Map map = boardDao.showList(mView, pageNum, sqlSession);
+		
+		mView.addObject("writingList", map.get("writingList"));
+		mView.addObject("logList", map.get("logList"));
+		mView.addObject("pageList", map.get("pageList"));
+		mView.addObject("curPage", Integer.toString(pageNum));
+		
 		HttpSession session = request.getSession();
 		session.setAttribute("curPage", pageNum);
 
@@ -125,8 +140,8 @@ public class HomeController {
 		return mView;
 	}
 
-	@RequestMapping(value = "/checkPassword", method = RequestMethod.POST)
-	public ModelAndView checkPassword(HttpServletRequest request,
+	@RequestMapping(value = "/isCollectPassword", method = RequestMethod.POST)
+	public ModelAndView isCollectPassword(HttpServletRequest request,
 			HttpServletResponse response) {
 		ModelAndView mView = new ModelAndView();
 		mView.setViewName("/board/emailCheckResult.jsp");
