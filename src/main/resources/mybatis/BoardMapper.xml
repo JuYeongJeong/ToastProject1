@@ -53,7 +53,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	<insert id="insertLog" parameterType="int">
 		INSERT INTO Log(writingnum,
 		changetime)
-		VALUES(#{writingnum}, SYS_DATE);
+		VALUES(#{writingnum},CURRENT_DATETIME);
 	</insert>
 
 	<update id="updateWriting" parameterType="nhnent.board.vo.Writing">
