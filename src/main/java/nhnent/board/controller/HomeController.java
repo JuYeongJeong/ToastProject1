@@ -63,6 +63,7 @@ public class HomeController {
 
 		return mView;
 	}
+
 	@RequestMapping(value = "/showWriting", method = RequestMethod.GET)
 	public ModelAndView showWriting(HttpServletRequest request,
 			HttpServletResponse response) {
@@ -121,6 +122,27 @@ public class HomeController {
 
 		boardDao.updateWriting(mView, request, sqlSession);
 
+		return mView;
+	}
+
+	@RequestMapping(value = "/checkPassword", method = RequestMethod.POST)
+	public ModelAndView checkPassword(HttpServletRequest request,
+			HttpServletResponse response) {
+		ModelAndView mView = new ModelAndView();
+		mView.setViewName("/board/emailCheckResult.jsp");
+
+		int writingNum = Integer.parseInt(request.getParameter("writingNum"));
+		String password = request.getParameter("password");
+
+		Boolean result = boardDao.checkPassword(writingNum, password,
+				sqlSession);
+		
+		mView.addObject("result",result.toString());
+//		if(result)
+//			mView.addObject("result",result);
+//		else
+//			mView.addObject("result","false");
+//		
 		return mView;
 	}
 

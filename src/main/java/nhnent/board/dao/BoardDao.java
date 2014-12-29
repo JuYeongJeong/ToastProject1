@@ -56,11 +56,11 @@ public class BoardDao {
 	}
 
 	public ArrayList<String> getPageStrList(SqlSession sqlSession, int pageNum) {
-		int pageGroup = (int) Math.ceil(pageNum/10.0);
-		int startNum = (pageGroup-1)*10 +1;
+		int pageGroup = (int) Math.ceil(pageNum / 10.0);
+		int startNum = (pageGroup - 1) * 10 + 1;
 		int writingCount = sqlSession.selectOne("BoardMapper.writingCount");
-		int endNum = writingCount < startNum + 9? writingCount: startNum + 9;
-		
+		int endNum = writingCount < startNum + 9 ? writingCount : startNum + 9;
+
 		ArrayList<String> pageList = new ArrayList<String>();
 		if (startNum > 10)
 			pageList.add("prev");
@@ -68,7 +68,7 @@ public class BoardDao {
 		for (int i = startNum; i <= endNum; i++) {
 			pageList.add(Integer.toString(i));
 		}
-		
+
 		if (endNum < writingCount)
 			pageList.add("next");
 
@@ -85,7 +85,7 @@ public class BoardDao {
 		modelAndView.addObject("writingList", writingList);
 		modelAndView.addObject("logList", logList);
 		modelAndView.addObject("pageList", pageList);
-		modelAndView.addObject("curPage",Integer.toString(pageNum));
+		modelAndView.addObject("curPage", Integer.toString(pageNum));
 	}
 
 	public void showWriting(ModelAndView modelAndView, int writingNum,
@@ -122,6 +122,22 @@ public class BoardDao {
 		modelAndView.addObject("writing", writing);
 		Log log = sqlSession.selectOne("BoardMapper.curLog", writingNum);
 		modelAndView.addObject("log", log);
+	}
+
+	public boolean checkPassword(int writingNum, String password,
+			SqlSession sqlSession) {
+		// TODO Auto-generated method stub
+		if (password == null || password.length() == 0)
+			return false;
+
+		boolean result = false;
+		Writing writing = sqlSession.selectOne("BoardMapper.writingView",
+				writingNum);
+
+		if (password.equals(writing.getPassword()))
+			result = true;
+
+		return result;
 	}
 
 }
