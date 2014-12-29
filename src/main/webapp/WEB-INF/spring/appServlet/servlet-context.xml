@@ -26,9 +26,6 @@
 
 	<beans:bean id="multipartResolver"
 		class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
-
-		<!-- setting maximum upload size -->
-		<beans:property name="maxUploadSize" value="100000" />
 	</beans:bean>
 
 	<context:component-scan base-package="nhnent.board.controller" />

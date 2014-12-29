@@ -1,5 +1,10 @@
 package nhnent.board.dao;
 
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -11,23 +16,62 @@ import javax.servlet.http.HttpServletRequest;
 import nhnent.board.vo.Log;
 import nhnent.board.vo.Writing;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.ibatis.session.SqlSession;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
 public class BoardDao {
 
 	public static final int DEFAULT_PAGE_VIEW = 1;
 	public static final int MAX_PAGE_VIEW = 10;
-
+	public final int FILE_BUFFER_SIZE = 4084;
+	
 	public BoardDao() {
 	}
 
-	public void insert(Writing writing, SqlSession sqlSession) {
+	public void addWriting(Map map, SqlSession sqlSession) {
 
-		sqlSession.insert("BoardMapper.insertWriting", writing);
+		Writing writing = new Writing();
+		
+		writing.setTitle((String) map.get("title"));
+		writing.setEmail((String)map.get("email"));
+		writing.setPassword((String)map.get("password"));
+		writing.setContent((String)map.get("content"));
+		writing.setFilePath((String)map.get("filePath"));
+		
+		sqlSession.insert("BoardMapper.insertWriting", map);
 		int writingNum = sqlSession.selectOne("BoardMapper.maxWritingNum");
-
 		sqlSession.insert("BoardMapper.insertLog", writingNum);
+	}
+
+	public String uploadFile(String basePath, MultipartFile multipartFile) {
+		// TODO Auto-generated method stub
+		String filePath=basePath+"/upload";
+		multipartFile.getOriginalFilename();
+		
+		File file = new File(filePath);
+		if(!file.exists())
+			file.mkdir();
+			
+		OutputStream out = null;
+		try {
+			filePath += "\\"+ multipartFile.getOriginalFilename();
+            out = new FileOutputStream(filePath);
+            BufferedInputStream bis = new BufferedInputStream(multipartFile.getInputStream());
+            byte[] buffer = new byte[FILE_BUFFER_SIZE];
+            int read;
+            while ((read = bis.read(buffer)) > 0) {
+                out.write(buffer, 0, read);
+            }
+
+        } catch (IOException ioe) {
+        	filePath = "upload:false";
+        } finally {
+            IOUtils.closeQuietly(out);
+        }
+		
+		return filePath;
 	}
 
 	public List getWritingList(int pageNum, int limit, SqlSession sqlSession) {
@@ -155,4 +199,6 @@ public class BoardDao {
 
 	}
 
+	
+	
 }

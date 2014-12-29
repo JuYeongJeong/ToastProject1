@@ -6,12 +6,13 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Insert title here</title>
 <script src="http://code.jquery.com/jquery-2.1.3.js"></script>
+
 <script>
 	$(document).ready(function() {
 		$("#addWritingBt").click(function() {
 
 			var email = $("#emailFirst").val() + '@' + $("#emailSecond").val();
-		
+
 			if ($("#title").val() == '') {
 				alert("제목을 입력하세요");
 				return;
@@ -34,18 +35,19 @@
 
 			$("#writingForm").submit();
 		});
+		
 	});
 
 	function isCollectEmail(email) {
 		var result = true;
-	
+
 		//client check
-		var regex =/^([0-9a-zA-Z_\.-]+)@([0-9a-zA-Z_-]+)(\.[0-9a-zA-Z_-]+){1,2}$/;
+		var regex = /^([0-9a-zA-Z_\.-]+)@([0-9a-zA-Z_-]+)(\.[0-9a-zA-Z_-]+){1,2}$/;
 		if (regex.test(email))
 			result = true;
 		else
 			return false;
-		
+
 		//server check
 		$.ajax({
 			type : "POST",
@@ -54,7 +56,7 @@
 				email : email
 			},
 			success : function(data) {
-				if(data.search("true") != -1)
+				if (data.search("true") != -1)
 					result = true;
 				else
 					result = false;
@@ -63,13 +65,45 @@
 				alert("error");
 			}
 		});
-		
-		
+
 		return result;
 	}
 
 	function cancelClick(curPage) {
 		location.replace("/board/showList?pageNum=" + curPage);
+	}
+	
+	function upload()
+	{
+		 var formData = new FormData();
+		 formData.append($("#uploadBt").val(),uploadBt.files[0])
+		  $.ajax({
+		      url: "/board/fileUpload",
+		      data: formData,
+		      dataType: 'text',
+		      processData: false,
+		      contentType: false,
+		      type: 'POST',
+		      success: function (data) {
+		 
+		    	if(data.search("upload:overSize") !=-1)
+		    	{
+		    		$("#uploadBt").val('');
+		    		alert("10MB 까지만 지원됩니다.");	
+		    	}
+		    	else if(data.search("upload:false") != -1)
+		    	{	
+		    		$("#uploadBt").val('');
+		    		alert("서버 문제로 인한 실패");
+		    	}
+		    	else
+		    		$("#filePath").val($(data).text());
+		 
+		      },
+		      error: function (data) {
+		        alert('error');
+		      }
+		    });
 	}
 </script>
 
@@ -96,7 +130,7 @@ table, th, td {
 					<td width="25%">Email</td>
 					<td width="75%"><input id="emailFirst" name="emailFirst"
 						type="text" size="15">@<input id="emailSecond"
-						name="emailSecond" type="text" size="15"></td>
+						name="emailSecond" type="text" size="18"></td>
 				</tr>
 				<tr height="30px">
 					<td width="25%">Password</td>
@@ -104,14 +138,20 @@ table, th, td {
 						size="40"></td>
 				</tr>
 				<tr>
-					<td colspan="2"><textarea name="content" cols="54" rows="10">내용을 입력하세요</textarea>
+					<td colspan="2"><textarea name="content" cols="56" rows="12">내용을 입력하세요</textarea>
 					</td>
 				</tr>
+			</table>
+			<input id="filePath" name="filePath" type="text" style="display: none">
+		</form>
+		<form id="uploadForm" method="post" enctype="multipart/form-data">
+			<table width="400px">
 				<tr height="30px">
-					<td width="10%">파일첨부</td>
-					<td width="90%" align="left"><input type="file"></td>
+					<td align="left" width="100%" colspan="2"><input type="file"
+						name="uploadBt" id="uploadBt" onchange="upload()"></td>
 				</tr>
 			</table>
+		</form>
 			<br>
 			<table style="border: none;">
 				<tr>
@@ -120,7 +160,7 @@ table, th, td {
 						type="button" id="addWritingBt" value="확인">
 				</tr>
 			</table>
-		</form>
+		
 
 	</div>
 </body>

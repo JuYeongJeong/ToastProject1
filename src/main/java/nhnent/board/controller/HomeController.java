@@ -1,5 +1,6 @@
 package nhnent.board.controller;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -30,9 +31,12 @@ public class HomeController {
 	private static final Logger LOGGER = LoggerFactory
 			.getLogger(HomeController.class);
 
+	private final int TEN_MB = 10485760;
+	
 	@Autowired
 	private SqlSession sqlSession;
 	private BoardDao boardDao = new BoardDao();
+
 
 	/**
 	 * Simply selects the home view to render by returning its name.
@@ -40,6 +44,7 @@ public class HomeController {
 	@RequestMapping(value = "/", method = RequestMethod.GET)
 	public ModelAndView home(HttpServletRequest request,
 			HttpServletResponse response) {
+	
 		ModelAndView mView = new ModelAndView("/board/writingList.jsp");
 
 		Map map = boardDao.showList(mView, BoardDao.DEFAULT_PAGE_VIEW, sqlSession);
@@ -88,17 +93,16 @@ public class HomeController {
 	@RequestMapping(value = "/addWriting", method = RequestMethod.POST)
 	public ModelAndView addWriting(HttpServletRequest request,
 			HttpServletResponse response, MultipartFile file) {
-		MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;
-		Writing writing = new Writing();
-
-		writing.setTitle(multipartRequest.getParameter("title"));
-		writing.setEmail(multipartRequest.getParameter("emailFirst")+'@'+multipartRequest.getParameter("emailSecond"));
-		writing.setPassword(multipartRequest.getParameter("password"));
-		writing.setFilePath(multipartRequest.getParameter("filePath"));
-		writing.setContent(multipartRequest.getParameter("content"));
-
-		boardDao.insert(writing, sqlSession);
-
+	
+		Map map = new HashMap();
+		map.put("title", request.getParameter("title"));
+		map.put("email", request.getParameter("emailFirst")+'@'+request.getParameter("emailSecond"));
+		map.put("password",request.getParameter("password"));
+		map.put("content", request.getParameter("content"));
+		map.put("filePath", request.getParameter("filePath"));
+		
+		boardDao.addWriting(map, sqlSession);
+		
 		return new ModelAndView("redirect:/");
 	}
 
@@ -139,7 +143,7 @@ public class HomeController {
 	@RequestMapping(value = "/isCollectPassword", method = RequestMethod.POST)
 	public ModelAndView isCollectPassword(HttpServletRequest request,
 			HttpServletResponse response) {
-		ModelAndView mView = new ModelAndView("/board/emailCheckResult.jsp");
+		ModelAndView mView = new ModelAndView("/board/ajaxCheckResult.jsp");
 
 		int writingNum = Integer.parseInt(request.getParameter("writingNum"));
 		String password = request.getParameter("password");
@@ -154,7 +158,7 @@ public class HomeController {
 	@RequestMapping(value = "/isCollectEmail", method = RequestMethod.POST)
 	public ModelAndView isCollectEmail(HttpServletRequest request,
 			HttpServletResponse response) {
-		ModelAndView mView = new ModelAndView("/board/emailCheckResult.jsp");
+		ModelAndView mView = new ModelAndView("/board/ajaxCheckResult.jsp");
 		
 		String email = request.getParameter("email");
 
@@ -164,4 +168,18 @@ public class HomeController {
 		return mView;
 	}
 
+	@RequestMapping(value = "/fileUpload", method = RequestMethod.POST)
+	public ModelAndView fileUpload(MultipartHttpServletRequest request) {
+		ModelAndView mView = new ModelAndView("/board/ajaxCheckResult.jsp");
+		
+		String fileName = request.getFileNames().next();
+		MultipartFile multipartFile = request.getFile(fileName);
+		
+		if( multipartFile.getSize() > TEN_MB)
+			return mView.addObject("result","upload:overSize");
+		
+		String strResult = boardDao.uploadFile(request.getRealPath(""),multipartFile);
+		mView.addObject("result",strResult);
+		return mView;
+	}
 }
