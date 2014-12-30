@@ -20,6 +20,33 @@
 		});
 
 	});
+
+	function upload() {
+		var formData = new FormData();
+		formData.append($("#uploadBt").val(), uploadBt.files[0])
+		$.ajax({
+			url : "/board/fileUpload",
+			data : formData,
+			dataType : 'text',
+			processData : false,
+			contentType : false,
+			type : 'POST',
+			success : function(data) {
+
+				if (data.search("upload:overSize") != -1) {
+					$("#uploadBt").val('');
+					alert("10MB 까지만 지원됩니다.");
+				} else if (data.search("upload:false") != -1) {
+					$("#uploadBt").val('');
+					alert("서버 문제로 인한 실패");
+				} else
+					$("#filePath").val($(data).text());
+			},
+			error : function(data) {
+				alert('error');
+			}
+		});
+	}
 </script>
 <style type="text/css">
 table, th, td {
@@ -36,43 +63,51 @@ table, th, td {
 		<h2>글 수정</h2>
 		<form id="updateForm" method="post" action="/board/updateWriting"
 			enctype="multipart/form-data">
-			<table width="400px">
+			<table width="400px" >
 				<tr style="display: none;">
 					<td>writingNum</td>
 					<td><input id="writingNum" name="writingNum" type="text"
 						value="${writing.writingNum}" /></td>
 				</tr>
-				<tr height="30px">
+				<tr height="30px" align="left">
 					<td width="25%">제목</td>
 					<td width="75%"><input id="title" name="title" type="text"
-						maxlength="50" size="42" value="${writing.title}" /></td>
+						maxlength="50" size="40" value="${writing.title}" /></td>
 				</tr>
-				<tr height="30px">
+				<tr height="30px" align="left">
 					<td width="25%">Email</td>
 					<td>${writing.email}</td>
 				</tr>
-				<tr height="30px">
+				<tr height="30px" align="left">
 					<td colspan="2">본문</td>
 				</tr>
 				<tr>
-					<td colspan="2"><textarea name="content" cols="56" rows="10"><c:if
+					<td colspan="2"><textarea name="content" cols="56" rows="12"><c:if
 								test="${not empty writing.content}">${writing.content}</c:if></textarea></td>
 				</tr>
-				<tr height="30px">
-					<td width="10%">파일첨부</td>
-					<td width="90%"><input type="file"
-						<c:if test="${not empty writing.filePath}">value="${writing.filePath}"</c:if>></td>
-				</tr>
 			</table>
-			<br>
-			<table style="border: none;">
-				<tr>
-					<td colspan="2" style="border: none;"><input type="button"
-						id="cancelBT" value="취소">&nbsp;&nbsp;<input type="button"
-						id="modifyBT" value="수정"></td>
+			<input id="filePath" name="filePath" type="text" style="display: none" value="<c:if test='${not empty writing.filePath}'>${writing.filePath}</c:if>">
+		</form>
+		<form id="uploadForm" method="post" enctype="multipart/form-data">
+			<table width="400px" >
+				<tr height="30px" align="left">
+					<td >파일첨부</td>
+					<td ><c:if test="${not empty writing.filePath}">
+						${requestScope.fileName}
+					</c:if> <c:if test="${empty writing.filePath}">
+							<input type="file" name="uploadBt" id="uploadBt" onchange="upload()">
+						</c:if></td>
 				</tr>
 			</table>
 		</form>
+		<br>
+		<table style="border: none;">
+			<tr>
+				<td colspan="2" style="border: none;"><input type="button"
+					id="cancelBT" value="취소">&nbsp;&nbsp;<input type="button"
+					id="modifyBT" value="수정"></td>
+			</tr>
+		</table>
 
 	</div>
 </body>

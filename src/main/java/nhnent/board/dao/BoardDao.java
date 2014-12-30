@@ -135,6 +135,7 @@ public class BoardDao {
 
 		writing.setTitle(map.get("title"));
 		writing.setContent(map.get("content"));
+		writing.setFilePath(map.get("filePath"));
 
 		sqlSession.update("BoardMapper.updateWriting", writing);
 		sqlSession.insert("BoardMapper.insertLog", writingNum);
@@ -144,6 +145,12 @@ public class BoardDao {
 		
 		Log log = sqlSession.selectOne("BoardMapper.curLog", writingNum);
 		resultMap.put("log", log);
+		
+		if(writing.isValidFile())
+		{
+			File file = new File(writing.getFilePath());
+			resultMap.put("fileName", file.getName());
+		}
 		
 		return resultMap;
 	}
@@ -221,6 +228,12 @@ public class BoardDao {
 			pageList.add("next");
 
 		return pageList;
+	}
+
+	public int getPageNum(int writingNum, SqlSession sqlSession) {
+		// TODO Auto-generated method stub
+		int writingRank = sqlSession.selectOne("BoardMapper.writingRank",writingNum);
+		return (int) Math.ceil(writingRank/10.0);
 	}
 
 }

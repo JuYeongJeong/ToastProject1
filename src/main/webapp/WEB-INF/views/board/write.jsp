@@ -122,7 +122,7 @@ table, th, td {
 		<h2>글 쓰기</h2>
 		<form id="writingForm" method="post" action="/board/addWriting"
 			enctype="multipart/form-data">
-			<table width="400px">
+			<table width="400px" >
 				<tr height="30px">
 					<td width="25%">제목</td>
 					<td width="75%"><input id="title" name="title" type="text"
@@ -147,7 +147,7 @@ table, th, td {
 			<input id="filePath" name="filePath" type="text" style="display: none">
 		</form>
 		<form id="uploadForm" method="post" enctype="multipart/form-data">
-			<table width="400px">
+			<table width="400px" style="table-layout: fixed">
 				<tr height="30px">
 					<td align="left" width="100%" colspan="2"><input type="file"
 						name="uploadBt" id="uploadBt" onchange="upload()"></td>
@@ -155,9 +155,9 @@ table, th, td {
 			</table>
 		</form>
 			<br>
-			<table style="border: none;">
-				<tr>
-					<td colspan="2" style="border: none;"><input type="button"
+			<table width="400px" style="border: none;">
+				<tr >
+					<td align="center" colspan="2" style="border: none;"><input type="button"
 						id="cancelBt" onclick="cancelClick('${curPage}');" value="취소">&nbsp;&nbsp;<input
 						type="button" id="addWritingBt" value="확인">
 				</tr>

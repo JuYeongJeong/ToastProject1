@@ -79,6 +79,14 @@ public class HomeController {
 		int writingNum = Integer.parseInt(request.getParameter("writingNum"));
 		Writing writing = boardDao.modifyWriting(writingNum, sqlSession);
 		mView.addObject("writing", writing);
+		
+		if(writing.isValidFile())
+		{
+			File file = new File(writing.getFilePath());
+			mView.addObject("fileName", file.getName());
+		}
+		
+		
 		return mView;
 	}
 
@@ -129,6 +137,8 @@ public class HomeController {
 		} catch (Exception e) {
 			pageNum = 1;
 		}
+		
+		
 		Map map = boardDao.showList(pageNum, sqlSession);
 
 		mView.addObject("writingList", map.get("writingList"));
@@ -141,7 +151,30 @@ public class HomeController {
 
 		return mView;
 	}
+	
+	
+	@RequestMapping(value = "/backPageList", method = RequestMethod.GET)
+	public ModelAndView backPageList(HttpServletRequest request,
+			HttpServletResponse response) {
+		ModelAndView mView = new ModelAndView("/board/writingList.jsp");
 
+		int writingNum = Integer.parseInt(request.getParameter("writingNum"));
+		int pageNum = boardDao.getPageNum(writingNum, sqlSession);
+	
+		Map map = boardDao.showList(pageNum, sqlSession);
+
+		mView.addObject("writingList", map.get("writingList"));
+		mView.addObject("logList", map.get("logList"));
+		mView.addObject("pageList", map.get("pageList"));
+		mView.addObject("curPage", Integer.toString(pageNum));
+
+		HttpSession session = request.getSession();
+		session.setAttribute("curPage", pageNum);
+
+		return mView;
+	}
+	
+	
 	@RequestMapping(value = "/updateWriting", method = RequestMethod.POST)
 	public ModelAndView updateWriting(HttpServletRequest request,
 			HttpServletResponse response) {
@@ -150,10 +183,12 @@ public class HomeController {
 		map.put("writingNum",request.getParameter("writingNum"));
 		map.put("title",request.getParameter("title"));
 		map.put("content",request.getParameter("content"));
+		map.put("filePath",request.getParameter("filePath"));
 		
 		Map<String,Object> resultMap = boardDao.updateWriting(map, sqlSession);
 		mView.addObject("writing",resultMap.get("writing"));
 		mView.addObject("log",resultMap.get("log"));
+		mView.addObject("fileName",resultMap.get("fileName"));
 		
 		return mView;
 	}
