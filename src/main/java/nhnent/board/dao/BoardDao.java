@@ -83,7 +83,7 @@ public class BoardDao {
 
 	public Map showList(int pageNum,
 			SqlSession sqlSession) {
-		Map map = new HashMap();
+		Map<String,List> map = new HashMap<>();
 
 		List<Writing> writingList = getWritingList(pageNum,
 				BoardDao.MAX_PAGE_VIEW, sqlSession);
@@ -109,9 +109,8 @@ public class BoardDao {
 		
 		map.put("writing", writing);
 		
-		String filePath = writing.getFilePath();
-		if (filePath != null && filePath.length() != 0) {
-			File file = new File(filePath);
+		if (writing.isValidFile()) {
+			File file = new File(writing.getFilePath());
 			map.put("fileName", file.getName());
 		}
 
@@ -140,7 +139,7 @@ public class BoardDao {
 		sqlSession.update("BoardMapper.updateWriting", writing);
 		sqlSession.insert("BoardMapper.insertLog", writingNum);
 		
-		Map<String,Object> resultMap = new HashMap<String,Object>();
+		Map<String,Object> resultMap = new HashMap<>();
 		resultMap.put("writing", writing);
 		
 		Log log = sqlSession.selectOne("BoardMapper.curLog", writingNum);
@@ -176,7 +175,7 @@ public class BoardDao {
 		int endNum = pageNum * 10;
 		int startNum = endNum - 9;
 
-		HashMap<String, Integer> hashMap = new HashMap<String, Integer>();
+		HashMap<String, Integer> hashMap = new HashMap<>();
 		hashMap.put("startNum", startNum);
 		hashMap.put("endNum", endNum);
 
@@ -188,7 +187,7 @@ public class BoardDao {
 	
 	private List getCurWritingLogList(List<Writing> writingList,
 			SqlSession sqlSession) {
-		List<Log> logList = new ArrayList<Log>();
+		List<Log> logList = new ArrayList<>();
 
 		//java8 lamda application
 		writingList.forEach(write -> {
@@ -201,7 +200,7 @@ public class BoardDao {
 	}
 	
 	private List<String> getPageStrList(SqlSession sqlSession, int pageNum) {
-		List<String> pageList = new ArrayList<String>();
+		List<String> pageList = new ArrayList<>();
 		if(pageNum < 1)
 			return pageList;
 		

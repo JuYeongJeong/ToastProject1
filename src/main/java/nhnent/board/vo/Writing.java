@@ -71,4 +71,9 @@ public class Writing {
 		this.filePath = filePath;
 	}
 
+	public boolean isValidFile() {
+		// TODO Auto-generated method stub
+		return this.filePath != null && filePath.length()==0;
+	}
+
 }

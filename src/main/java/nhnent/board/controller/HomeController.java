@@ -104,7 +104,7 @@ public class HomeController {
 	public ModelAndView addWriting(HttpServletRequest request,
 			HttpServletResponse response, MultipartFile file) {
 
-		Map map = new HashMap();
+		Map<String, String> map = new HashMap();
 		map.put("title", request.getParameter("title"));
 		map.put("email",
 				request.getParameter("emailFirst") + '@'
@@ -146,7 +146,7 @@ public class HomeController {
 	public ModelAndView updateWriting(HttpServletRequest request,
 			HttpServletResponse response) {
 		ModelAndView mView = new ModelAndView("/board/view.jsp");
-		Map<String,String> map = new HashMap<String,String>();
+		Map<String,String> map = new HashMap<>();
 		map.put("writingNum",request.getParameter("writingNum"));
 		map.put("title",request.getParameter("title"));
 		map.put("content",request.getParameter("content"));
