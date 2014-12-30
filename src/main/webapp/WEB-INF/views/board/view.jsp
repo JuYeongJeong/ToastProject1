@@ -6,6 +6,8 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Insert title here</title>
+<!-- ie8이하 버전은 jquery 2.1버전 미지원 -->
+<script src="http://code.jquery.com/jquery-1.8.3.js"></script>
 <script src="http://code.jquery.com/jquery-2.1.3.js"></script>
 <script>
 	$(document).ready(function() {
@@ -20,14 +22,12 @@
 	function modifyBtClick() {
 
 		var inputPass = window.prompt("password를 입력하세요");
-		if (inputPass == null && inputPass == '')
+		if (inputPass == null || inputPass == '')
 			return;
-		
-		alert();
 
-		$.ajax({
+		jQuery.ajax({
 			type : "POST",
-			url : "/board/isCollectPassword",
+			url : "/board/isCorrectPassword",
 			data : {
 				writingNum : $("#writingNum").val(),
 				password : inputPass
@@ -35,8 +35,10 @@
 			success : function(data) {
 				if(data.search("true") != -1)
 					$("#modifyForm").submit();
-				else
+				else if(data.search("false") != -1)
 					alert("비밀번호가 틀립니다.");
+				else
+					alert("ajax 실패");
 			},
 			error : function(data) {
 				alert("error");

@@ -8,6 +8,8 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Insert title here</title>
+<!-- ie8이하 버전은 jquery 2.1버전 미지원 -->
+<script src="http://code.jquery.com/jquery-1.8.3.js"></script>
 <script src="http://code.jquery.com/jquery-2.1.3.js"></script>
 <script>
 	$(document).ready(function() {

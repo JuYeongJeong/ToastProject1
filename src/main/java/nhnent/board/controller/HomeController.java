@@ -40,6 +40,7 @@ public class HomeController {
 
 	@Autowired
 	private SqlSession sqlSession;
+	
 	private BoardDao boardDao = new BoardDao();
 
 	/**
@@ -51,7 +52,7 @@ public class HomeController {
 
 		ModelAndView mView = new ModelAndView("/board/writingList.jsp");
 
-		Map map = boardDao.showList(mView, BoardDao.DEFAULT_PAGE_VIEW,
+		Map map = boardDao.showList(BoardDao.DEFAULT_PAGE_VIEW,
 				sqlSession);
 
 		mView.addObject("writingList", map.get("writingList"));
@@ -88,7 +89,7 @@ public class HomeController {
 
 		int writingNum = Integer.parseInt(request.getParameter("writingNum"));
 
-		Map map = boardDao.showWriting(mView, writingNum, sqlSession);
+		Map map = boardDao.showWriting(writingNum, sqlSession);
 		mView.addObject("writing", map.get("writing"));
 		mView.addObject("log", map.get("log"));
 
@@ -128,7 +129,7 @@ public class HomeController {
 		} catch (Exception e) {
 			pageNum = 1;
 		}
-		Map map = boardDao.showList(mView, pageNum, sqlSession);
+		Map map = boardDao.showList(pageNum, sqlSession);
 
 		mView.addObject("writingList", map.get("writingList"));
 		mView.addObject("logList", map.get("logList"));
@@ -145,35 +146,41 @@ public class HomeController {
 	public ModelAndView updateWriting(HttpServletRequest request,
 			HttpServletResponse response) {
 		ModelAndView mView = new ModelAndView("/board/view.jsp");
-
-		boardDao.updateWriting(mView, request, sqlSession);
-
+		Map<String,String> map = new HashMap<String,String>();
+		map.put("writingNum",request.getParameter("writingNum"));
+		map.put("title",request.getParameter("title"));
+		map.put("content",request.getParameter("content"));
+		
+		Map<String,Object> resultMap = boardDao.updateWriting(map, sqlSession);
+		mView.addObject("writing",resultMap.get("writing"));
+		mView.addObject("log",resultMap.get("log"));
+		
 		return mView;
 	}
 
-	@RequestMapping(value = "/isCollectPassword", method = RequestMethod.POST)
-	public ModelAndView isCollectPassword(HttpServletRequest request,
+	@RequestMapping(value = "/isCorrectPassword", method = RequestMethod.POST)
+	public ModelAndView isCorrectPassword(HttpServletRequest request,
 			HttpServletResponse response) {
 		ModelAndView mView = new ModelAndView("/board/ajaxCheckResult.jsp");
 
 		int writingNum = Integer.parseInt(request.getParameter("writingNum"));
 		String password = request.getParameter("password");
 
-		Boolean result = boardDao.isCollectPassword(writingNum, password,
+		Boolean result = boardDao.isCorrectPassword(writingNum, password,
 				sqlSession);
 		mView.addObject("result", result.toString());
 
 		return mView;
 	}
 
-	@RequestMapping(value = "/isCollectEmail", method = RequestMethod.POST)
-	public ModelAndView isCollectEmail(HttpServletRequest request,
+	@RequestMapping(value = "/isCorrectEmail", method = RequestMethod.POST)
+	public ModelAndView isCorrectEmail(HttpServletRequest request,
 			HttpServletResponse response) {
 		ModelAndView mView = new ModelAndView("/board/ajaxCheckResult.jsp");
 
 		String email = request.getParameter("email");
 
-		Boolean result = boardDao.isCollectEmail(email, sqlSession);
+		Boolean result = boardDao.isCorrectEmail(email);
 		mView.addObject("result", result.toString());
 
 		return mView;
@@ -228,7 +235,9 @@ public class HomeController {
 			outStream.close();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			//e.printStackTrace();
+		}finally{
+			
 		}
 	}
 }

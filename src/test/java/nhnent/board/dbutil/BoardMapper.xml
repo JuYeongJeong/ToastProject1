@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="BoardMapper">
+
+	<select id="writingCount" resultType="int">
+		SELECT count(writingnum)
+		FROM WRITING
+	</select>
+
+	<select id="maxWritingNum" resultType="int">
+		SELECT max(writingnum)
+		FROM WRITING
+	</select>
+
+	<select id="writingList" parameterType="java.util.HashMap"
+		resultType="nhnent.board.vo.Writing">
+		SELECT writingnum, title, email, password, content,
+		filepath
+		FROM writing
+		WHERE ROWNUM BETWEEN #{startNum} and #{endNum}
+		ORDER BY writingnum DESC
+
+	</select>
+
+	<select id="writingView" parameterType="int" resultType="nhnent.board.vo.Writing">
+		SELECT
+		writingnum, title, email, password, content, filePath
+		FROM writing
+		WHERE writingnum = #{writingnum}
+	</select>
+
+	<select id="curLog" parameterType="int" resultType="nhnent.board.vo.Log">
+		SELECT
+		logNum, writingnum, changetime
+		FROM log
+		WHERE writingnum = #{writingnum}
+		and ROWNUM = 1
+	</select>
+
+
+	<insert id="insertWriting" parameterType="nhnent.board.vo.Writing">
+		INSERT INTO
+		WRITING(title,
+		email, password, content, filepath)
+		VALUES(#{title},
+		#{email},
+		#{password},
+		#{content}, #{filePath});
+	</insert>
+
+	<insert id="insertLog" parameterType="int">
+		INSERT INTO Log(writingnum,
+		changetime)
+		VALUES(#{writingnum},CURRENT_DATETIME);
+	</insert>
+
+	<update id="updateWriting" parameterType="nhnent.board.vo.Writing">
+		UPDATE WRITING
+		SET title= #{title}, content = #{content}, filePath = #{filePath}
+		WHERE writingNum = #{writingNum}
+	</update>
+
+</mapper>
