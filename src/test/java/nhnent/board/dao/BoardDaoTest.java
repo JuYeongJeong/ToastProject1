@@ -19,15 +19,17 @@ import org.junit.Test;
 public class BoardDaoTest {
 
 	private BoardDao boardDao = new BoardDao();
-	private SqlSession sqlSession;
+	private SqlSession sqlSession = null;
+	private DBUtil dbUtil = null;
 
 	public BoardDaoTest() {
-		sqlSession = DBUtil.getInstance().getSession();
+		dbUtil = DBUtil.getInstance();;
 	}
 
 	@Test
 	// 글 삽입
 	public void testAddWriting() {
+		sqlSession = dbUtil.getSession();
 		// 글 상입 테스트
 		Map<String, String> map = new HashMap<String, String>();
 		map.put("title", "테스트");
@@ -35,7 +37,6 @@ public class BoardDaoTest {
 		map.put("password", "test");
 		map.put("content", "test content");
 
-		sqlSession.commit();
 		int result = boardDao.addWriting(map, sqlSession);
 		assertEquals(result, 2);
 		sqlSession.commit();
@@ -46,26 +47,27 @@ public class BoardDaoTest {
 		assertEquals(log.getChangeTime().getTime(), System.currentTimeMillis(),
 				50);
 
+		sqlSession.close();
 	}
 
 	@Test
 	// 글 목록 보여주기
 	public void testShowList() {
-
+		sqlSession = dbUtil.getSession();
 		int writingCount = sqlSession.selectOne("BoardMapper.writingCount");
 		int writingListSize = 0;
 		int logListSize = 0;
 		int pageListSize = 0;
-
+		int pageNum =0;
 		// 0 page list 요청시-> list들에는 아무 정보도 없다.
-		Map<String, List> map = boardDao.showList(0, sqlSession);
+		Map<String, List> map = boardDao.showList(pageNum, sqlSession);
 		assertEquals(map.get("writingList").size(), writingListSize);
 		assertEquals(map.get("logList").size(), logListSize);
 		assertEquals(map.get("pageList").size(), pageListSize);
 
 		// 1page 요청시
-
-		map = boardDao.showList(1, sqlSession);
+		pageNum =1;
+		map = boardDao.showList(pageNum, sqlSession);
 		if (writingCount == 0) {
 			writingListSize = 0;
 			logListSize = 0;
@@ -83,35 +85,40 @@ public class BoardDaoTest {
 			pageListSize = pageListSize > 10 ? 11 : pageListSize;
 
 		}
-		assertEquals(map.get("writingList").size(), BoardDao.MAX_PAGE_VIEW);
-		assertEquals(map.get("logList").size(), 10);
+		assertEquals(map.get("writingList").size(), writingListSize);
+		assertEquals(map.get("logList").size(), logListSize);
 		assertEquals(map.get("pageList").size(), pageListSize);
-
+		
 		// 20page 요청시
-		map = boardDao.showList(20, sqlSession);
+		pageNum = 20;
+		map = boardDao.showList(pageNum, sqlSession);
 		if (writingCount == 0) {
 			writingListSize = 0;
 			logListSize = 0;
 			pageListSize = 0;
-		} else if (writingCount <= 10) {//
-			writingListSize = writingCount;
-			logListSize = writingCount;
-			pageListSize = 1;
-		} else if (writingCount > 10) {
+		} else if (writingCount < 10*(pageNum-1)+1) {//
+			writingListSize = 0;
+			logListSize = 0;
+			pageListSize = 0;
+		} else if (writingCount > 10*(pageNum-1)+1) {
 			writingListSize = BoardDao.MAX_PAGE_VIEW;
 			logListSize = BoardDao.MAX_PAGE_VIEW;
 			pageListSize = (int) Math.ceil(writingCount / 10.0);
-			pageListSize = pageListSize > 20 ? 12 : 11;
+			pageListSize = pageListSize > pageNum ? 12 : 11;
 		}
-		assertEquals(map.get("writingList").size(), BoardDao.MAX_PAGE_VIEW);
-		assertEquals(map.get("logList").size(), 10);
+		assertEquals(map.get("writingList").size(), writingListSize);
+		assertEquals(map.get("logList").size(), logListSize);
 		assertEquals(map.get("pageList").size(), pageListSize);
+	
+		sqlSession.close();
 	}
 
 	@Test
 	// 글 보기 화면
 	public void testShowWriting() {
-		int writingNum = 0;
+		sqlSession = dbUtil.getSession();
+		
+		Integer writingNum = 0;
 		Writing writing = null;
 		Map map = null;
 
@@ -121,17 +128,21 @@ public class BoardDaoTest {
 
 		// recent writing
 		writingNum = sqlSession.selectOne("BoardMapper.maxWritingNum");
-		if (writingNum > 0) {
+		if (writingNum !=null) {
 			map = boardDao.showWriting(writingNum, sqlSession);
 			writing = (Writing) map.get("writing");
-			assertEquals(writing.getWritingNum(), writingNum);
+			assertEquals(writing.getWritingNum(), writingNum.intValue());
 		}
+		
+		sqlSession.close();
 	}
 
 	@Test
 	public void testUpdateWriting() {
-		int writingNum = sqlSession.selectOne("BoardMapper.maxWritingNum");
-		if (writingNum > 0) {
+		sqlSession = dbUtil.getSession();
+		
+		Integer writingNum  = sqlSession.selectOne("BoardMapper.maxWritingNum");
+		if (writingNum != null) {
 			Map<String, String> map = new HashMap<String, String>();
 			map.put("writingNum",writingNum+"");
 			map.put("title","testUpdateWriting");
@@ -144,16 +155,18 @@ public class BoardDaoTest {
 			assertEquals(writing.getTitle(), "testUpdateWriting");
 		}
 		
+		sqlSession.close();
 		
 	}
 
 	@Test
 	// password 검사
 	public void testIsCorrectPassword() {
+		sqlSession = dbUtil.getSession();
 
-		int writingNum = sqlSession.selectOne("BoardMapper.maxWritingNum");
+		Integer writingNum = sqlSession.selectOne("BoardMapper.maxWritingNum");
 
-		if (writingNum > 0) {
+		if (writingNum != null) {
 
 			// 올바른 비밀 번호
 			Writing writing = sqlSession.selectOne("BoardMapper.writingView",
@@ -165,12 +178,14 @@ public class BoardDaoTest {
 			assertTrue(!boardDao.isCorrectPassword(writingNum,
 					writing.getPassword() + "aaa", sqlSession));
 		}
-
+		
+		sqlSession.close();
 	}
 
 	@Test
 	// email 유효성
 	public void testIsCorrectEmail() {
+		sqlSession = dbUtil.getSession();
 
 		// uncorrect email
 		assertTrue(!boardDao.isCorrectEmail("111111@aaaaaaa"));
@@ -179,6 +194,8 @@ public class BoardDaoTest {
 		// corrcet email
 		assertTrue(boardDao.isCorrectEmail("abc@acb.com"));
 		assertTrue(boardDao.isCorrectEmail("a12123bc@acb.com"));
+		
+		sqlSession.close();
 	}
 
 }

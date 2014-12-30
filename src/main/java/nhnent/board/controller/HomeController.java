@@ -98,6 +98,10 @@ public class HomeController {
 		int writingNum = Integer.parseInt(request.getParameter("writingNum"));
 
 		Map map = boardDao.showWriting(writingNum, sqlSession);
+		
+		if(map.size() == 0)
+			return home(request,response);
+		
 		mView.addObject("writing", map.get("writing"));
 		mView.addObject("log", map.get("log"));
 

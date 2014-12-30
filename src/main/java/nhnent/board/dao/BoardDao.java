@@ -181,7 +181,14 @@ public class BoardDao {
 	private List getWritingList(int pageNum, int limit, SqlSession sqlSession) {
 		int endNum = pageNum * 10;
 		int startNum = endNum - 9;
-
+		
+		int writingCount = sqlSession.selectOne("BoardMapper.writingCount");
+		if(startNum > writingCount)
+		{
+			startNum = 0;
+			endNum =0;
+		}
+		
 		HashMap<String, Integer> hashMap = new HashMap<>();
 		hashMap.put("startNum", startNum);
 		hashMap.put("endNum", endNum);
@@ -210,12 +217,15 @@ public class BoardDao {
 		List<String> pageList = new ArrayList<>();
 		if(pageNum < 1)
 			return pageList;
-		
-		int pageGroup = (int) Math.ceil(pageNum / 10.0);
-		int startNum = (pageGroup - 1) * 10 + 1;
 		int writingCount = sqlSession.selectOne("BoardMapper.writingCount");
-		int endNum = writingCount < startNum + 9 ? writingCount : startNum + 9;
-
+		int pageGroupCount = (int) Math.ceil(writingCount / 100.0);
+		int pageGroup = (int) Math.ceil(pageNum / 10.0);
+		int pageListCount = (int) Math.ceil(writingCount / 10.0);
+		if(pageGroup > pageGroupCount)
+			return pageList;
+	
+		int startNum = (pageGroup - 1) * 10 + 1;
+		int endNum = pageGroupCount >= pageGroup + 1  ? startNum + 9 : pageListCount; 
 		
 		if (startNum > 10)
 			pageList.add("prev");
@@ -224,7 +234,7 @@ public class BoardDao {
 			pageList.add(Integer.toString(i));
 		}
 
-		if (endNum < writingCount)
+		if (endNum < pageListCount)
 			pageList.add("next");
 
 		return pageList;
