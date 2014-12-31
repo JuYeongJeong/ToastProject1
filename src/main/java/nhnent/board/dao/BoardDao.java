@@ -246,4 +246,13 @@ public class BoardDao {
 		return (int) Math.ceil(writingRank/10.0);
 	}
 
+	public boolean isValidPageNum(int pageNum, SqlSession sqlSession) {
+		// TODO Auto-generated method stub
+		int writingCount = sqlSession.selectOne("BoardMapper.writingCount");
+		int pageNumCount = (int) Math.ceil(writingCount / 10.0);
+				
+		
+		return pageNum <= pageNumCount;
+	}
+
 }
