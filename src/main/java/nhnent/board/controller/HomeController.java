@@ -124,7 +124,7 @@ public class HomeController {
 		map.put("password", request.getParameter("password"));
 		map.put("content", request.getParameter("content"));
 		map.put("filePath", request.getParameter("filePath"));
-
+		
 		boardDao.addWriting(map, sqlSession);
 
 		return new ModelAndView("redirect:/");
@@ -140,6 +140,11 @@ public class HomeController {
 			pageNum = Integer.parseInt(request.getParameter("pageNum"));
 		} catch (Exception e) {
 			pageNum = 1;
+		}
+		
+		if(!boardDao.isValidPageNum(pageNum, sqlSession))
+		{
+			return home(request, response);
 		}
 		
 		
